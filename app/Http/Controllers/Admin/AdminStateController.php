@@ -89,7 +89,7 @@ class AdminStateController extends Controller
          
         $states= new State;
         $states->state_id=$state_id;
-        $states->state_nm = $req->state_nm;
+        $states->state_nm = Str::upper($req-> state_nm);
         $states ->state_code = Str::upper($req-> state_code);
         $states->head_off_nm = $req->head_off_nm;
         $states->contact_no = $req->contact_no;
@@ -224,7 +224,7 @@ class AdminStateController extends Controller
             }
       $editstate=State::where('state_id', $request->state_id)->first();
       //$editstate->state_id=$request->state_id;
-      $editstate->state_nm=$request->state_nm;
+    //   $editstate->state_nm=$request->state_nm;
       $editstate->head_off_nm=$request->head_off_nm;
       $editstate->contact_no=$request->contact_no;
       $editstate->color_nm = $request->color_nm;

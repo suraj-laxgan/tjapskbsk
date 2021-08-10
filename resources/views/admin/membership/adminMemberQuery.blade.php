@@ -51,7 +51,7 @@
                                             <!-- <label>Status  :</label>&nbsp; -->
                                                 <select name="mem_stat" id="mem_stat" class="form-controls">
                                                     <option value="">Select Status</option>
-                                                    <option value="A">Active</option>
+                                                    <option value="A" {{ (request("mem_stat") == "A" ? "selected":"") }}>Active</option>
                                                     {{-- <option value="D">Inactive</option> --}}
                                                 </select>
                                         </div>
@@ -59,11 +59,15 @@
                                             <!-- <label>Activitis Missing  :</label>&nbsp; -->
                                                 <select name="memo_no" id="memo_no" class="form-controls">
                                                     <option value="">Select Activitis Missing</option>
-                                                    <option value="M">Memo No</option>
-                                                    <option value="P">Photo</option>
-                                                    <option value="D">Designation</option>
-                                                    <option value="POP">Place Of Posting</option>
-                                                    <option value="DOB">D.O.B</option>
+                                                    <option value="M" {{ (request("memo_no") == "M" ? "selected":"") }}>Memo No</option>
+
+                                                    <option value="P" {{ (request("memo_no") == "P" ? "selected":"") }}>Photo</option>
+
+                                                    <option value="D" {{ (request("memo_no") == "D" ? "selected":"") }}>Designation</option>
+
+                                                    <option value="POP" {{ (request("memo_no") == "POP" ? "selected":"") }}>Place Of Posting</option>
+
+                                                    <option value="DOB" {{ (request("memo_no") == "DOB" ? "selected":"") }}>D.O.B</option>
 
                                                 </select>
                                         </div>
@@ -73,7 +77,7 @@
                                         <div class="col-sm-3" style='margin-left:-30px'  >
                                             <!-- <label>&nbsp;&nbsp;</label> -->
                                             <a href="{{url('/ad-member-query')}}">
-                                                <button class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
+                                                <button type="button"class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
                                             </a>    
                                         </div>
                                     </div>

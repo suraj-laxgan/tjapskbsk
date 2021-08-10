@@ -34,7 +34,7 @@
                     {{-- <div class='row'> --}}
                         <div class="col-sm-12">
                             {{-- <label>State :</label>&nbsp;<font color="#FF0000">*</font> --}}
-                            <input type="text"  value="{{ $stateedit->state_nm }}"id="state_nm" name="state_nm" class="form-controls"  >
+                            {{-- <input type="text"  value="{{ $stateedit->state_nm }}"id="state_nm" name="state_nm" class="form-controls"  > --}}
                         </div>
                         <div class="col-sm-12" style="margin-top: 5px">
                             {{-- <label>Head Office :</label>&nbsp;<font color="#FF0000">*</font> --}}

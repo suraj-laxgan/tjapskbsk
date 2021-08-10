@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin\wbApplicant;
 use App\Models\Admin\webUser;
+use App\Models\Admin\printConLetter;
 use App\Models\Admin\Designation;
 use DB;
 use PDF;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\allMemberExport;
 use App\Exports\allMemberQueryExport;
+use App\Exports\confirmationLetter;
 use Illuminate\Support\Collection;
+use Auth;
 
 class AdminMemberController extends Controller
 {
@@ -43,107 +46,152 @@ class AdminMemberController extends Controller
     
     public function adminMemberRegis(Request $request)
     {
-        $validated = $request->validate([
-            // 'state_code' => 'required|max:2',
-            'state_nm' => 'required',
-            'mem_nm' => 'required',
-            'media_nm' => 'required',
-            'entry_dt' => 'required',
-            'contact_no' => 'required | integer',
-            'mem_email' => 'required|string|email|max:255|unique:fcpm_mast',
-        ],
-        [
-            'state_nm.required' => 'State Name is required ',
-            'mem_nm.required' => 'Member Name is required ',
-            'media_nm.required' => 'Media Name is requirfd',
-            'entry_dt.required' => 'Entry Date is required',
-            'contact_no.required' => 'Contact No is required',
-            'mem_email.required' => 'Email is required'
-      ]);
+       
+    //     $validated = $request->validate([
+    //         // 'state_code' => 'required|max:2',
+    //         'state_nm' => 'required',
+    //         'mem_nm' => 'required',
+    //         'media_nm' => 'required',
+    //         'entry_dt' => 'required',
+    //         'contact_no' => 'required | integer',
+    //         'mem_email' => 'required|string|email|max:255|unique:fcpm_mast',
+    //     ],
+    //     [
+    //         'state_nm.required' => 'State Name is required ',
+    //         'mem_nm.required' => 'Member Name is required ',
+    //         'media_nm.required' => 'Media Name is requirfd',
+    //         'entry_dt.required' => 'Entry Date is required',
+    //         'contact_no.required' => 'Contact No is required',
+    //         'mem_email.required' => 'Email is required'
+    //   ]);
     
-        $sl_nos = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
-        //   dd($sl_nos);
+    //   $max_memo_no = DB::table('memo_no_max')->get();
+    //   dd( $max_memo_no);
 
-        $max_mem_id = wbApplicant::orderBy('mem_id','desc')->value('mem_id');
-        if($max_mem_id =="")
-        {
-            $mem_id = "00001";
+        $check_post = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('des_no_post');
+
+        $check_fcpm = $this->check_fcpm($request);
+        
+        // dd($check_post,$check_fcpm);
+        if($check_post > $check_fcpm){
+            $sl_nos = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
+            //   dd($sl_nos);
+        
+
+            $max_mem_id = wbApplicant::orderBy('mem_id','desc')->value('mem_id');
+            if($max_mem_id =="")
+            {
+                $mem_id = "00001";
+            }
+            else{
+                $me_id = ++$max_mem_id;
+                $mem_id = $me_id;
+            }
+            // dd( $max_mem_id);
+
+            $state_code =$request->state_nm;
+            // dd( $state_code);
+            $max_new_id = wbApplicant::orderBy('new_id','DESC')->orWhere('new_id', 'like', '%' . $state_code . '%')->value('new_id');
+
+            $state_nm = DB::table('state_mast')->where('state_code', $state_code)->value('state_nm');
+            
+            if($max_new_id =='')
+            {
+                $new_id =  $state_code .'00001';
+            }
+            else{
+                // $ne_id =  ++$max_new_id;
+                // $new_id = $ne_id;
+                $ne_id = substr($max_new_id,2,5);
+                $last_ne_id = ++$ne_id;
+                $last1 = str_pad($last_ne_id,5,"0",STR_PAD_LEFT);
+                $new_id = $state_code.$last1;
+            }
+            // dd(  $new_id);
+
+            $max_memo_no = wbApplicant::orderBy('memo_no','desc')->value('memo_no');
+            if($max_memo_no =="")
+            {
+                $memo_no = "SO/00001/2003";
+            }
+            else{
+                $me_no = substr($max_memo_no,2,6);
+                $last_memo_no = ++$me_no;
+                $last = str_pad($last_memo_no,6,"0",STR_PAD_LEFT);
+                $memo_no = 'SO'.$last.'/2003';
+            }
+
+            
+            $upload = $request->file('profile_pic');
+            $filename = $mem_id. '.' . $upload->getClientOriginalExtension();
+            $upload->move(public_path('mem_regis_upload'), $filename);
+
+            //head office,distric ofice,
+            if($request->des_type=='HEAD OFFICE')
+            {
+                $mem_posting_place='HEAD OFFICE';
+            }
+            elseif($request->des_type=='DISTRICT OFFICE')
+            {
+                $mem_posting_place=$request->district.' DISTRICT OFFICE';
+            }
+            elseif($request->des_type=='BLOCK OFFICE')
+            {
+                $mem_posting_place=$request->mem_posting_place;
+            }
+            else
+            {
+                $mem_posting_place='';
+            }
+
+            $mem= new wbApplicant;
+            $mem->mem_id=$mem_id;
+            $mem->memo_no=$memo_no;
+            $mem->new_id=$new_id;
+            $mem->state_nm=$state_nm;
+            $mem->state_code=$state_code;
+            $mem->mem_nm=$request->mem_nm;
+            $mem->media_nm=$request->media_nm;
+            $mem->entry_dt=$request->entry_dt;
+            $mem->contact_no=$request->contact_no;
+            $mem->mem_email=$request->mem_email;
+            $mem->guard_relatiion=$request->guard_relatiion;
+            $mem->guard_nm=$request->guard_nm;
+            $mem->gender=$request->gender;
+            $mem->mem_cast=$request->mem_cast;
+            $mem->birth_dt=$request->birth_dt;
+            $mem->mem_quali=$request->mem_quali;
+            $mem->mem_add=$request->mem_add;
+            $mem->mem_aadhar_no=$request->mem_aadhar_no;
+            $mem->mem_pan_no=$request->mem_pan_no;
+            $mem->mem_voterid_no=$request->mem_voterid_no;
+            $mem->bank_acount_no=$request->bank_acount_no;
+            $mem->mem_bank_nm=$request->mem_bank_nm;
+            $mem->bnk_ifsc_code=$request->bnk_ifsc_code;
+            $mem->des_type=$request->des_type;
+            $mem->mem_desig=$request->mem_desig;
+            $mem->district=$request->district;
+            $mem->mem_posting_place=$mem_posting_place;
+            $mem->sl_no=$sl_nos;
+            $mem->profile_pic=$filename;
+            $mem->save();
+            return redirect()->route('ad.adminmember')->with('msg','Member has been resgistered successfully');
         }
         else{
-            $me_id = ++$max_mem_id;
-            $mem_id = $me_id;
+            return redirect()->route('ad.adminmember')->with('msg','Maximum Designation Limit Reach');
         }
-        // dd( $max_mem_id);
-
-        $state_code =$request->state_nm;
-        $max_new_id = wbApplicant::orderBy('new_id','DESC')->orWhere('new_id', 'like', '%' . $state_code . '%')->value('new_id');
-
-        $state_nm = DB::table('state_mast')->where('state_code', $state_code)->value('state_nm');
         
-        if($max_new_id =='')
-        {
-            $new_id =  $state_code .'00001';
+    }
+    private function check_fcpm($request){
+        $check_fcpm = wbApplicant::where('des_type', $request->des_type)->where('mem_desig', $request->mem_desig);
+        if($request->district != ''){
+            $check_fcpm = $check_fcpm->where('district', $request->district);
         }
-        else{
-            // $ne_id =  ++$max_new_id;
-            // $new_id = $ne_id;
-            $ne_id = substr($max_new_id,2,5);
-            $last_ne_id = ++$ne_id;
-            $last1 = str_pad($last_ne_id,5,"0",STR_PAD_LEFT);
-            $new_id = $state_code.$last1;
+        if($request->mem_posting_place != ''){
+            $check_fcpm = $check_fcpm->where('mem_posting_place', $request->mem_posting_place);
         }
-        // dd(  $new_id);
-
-        $max_memo_no = wbApplicant::orderBy('memo_no','desc')->value('memo_no');
-        if($max_memo_no =="")
-        {
-            $memo_no = "SO/00001/2003";
-        }
-        else{
-            $me_no = substr($max_memo_no,2,6);
-            $last_memo_no = ++$me_no;
-            $last = str_pad($last_memo_no,6,"0",STR_PAD_LEFT);
-            $memo_no = 'SO'.$last.'/2003';
-        }
-
-        
-        $upload = $request->file('profile_pic');
-        $filename = $mem_id. '.' . $upload->getClientOriginalExtension();
-        $upload->move(public_path('mem_regis_upload'), $filename);
-
-        $mem= new wbApplicant;
-        $mem->mem_id=$mem_id;
-        $mem->memo_no=$memo_no;
-        $mem->new_id=$new_id;
-        $mem->state_nm=$state_nm;
-        $mem->state_code=$state_code;
-        $mem->mem_nm=$request->mem_nm;
-        $mem->media_nm=$request->media_nm;
-        $mem->entry_dt=$request->entry_dt;
-        $mem->contact_no=$request->contact_no;
-        $mem->mem_email=$request->mem_email;
-        $mem->guard_relatiion=$request->guard_relatiion;
-        $mem->guard_nm=$request->guard_nm;
-        $mem->gender=$request->gender;
-        $mem->mem_cast=$request->mem_cast;
-        $mem->birth_dt=$request->birth_dt;
-        $mem->mem_quali=$request->mem_quali;
-        $mem->mem_add=$request->mem_add;
-        $mem->mem_aadhar_no=$request->mem_aadhar_no;
-        $mem->mem_pan_no=$request->mem_pan_no;
-        $mem->mem_voterid_no=$request->mem_voterid_no;
-        $mem->bank_acount_no=$request->bank_acount_no;
-        $mem->mem_bank_nm=$request->mem_bank_nm;
-        $mem->bnk_ifsc_code=$request->bnk_ifsc_code;
-        $mem->des_type=$request->des_type;
-        $mem->mem_desig=$request->mem_desig;
-        $mem->district=$request->district;
-        $mem->mem_posting_place=$request->mem_posting_place;
-        $mem->sl_no=$sl_nos;
-        $mem->profile_pic=$filename;
-        $mem->save();
-        return redirect()->route('ad.adminmember')->with('msg','Member has been resgistered successfully');
-        
+        $check_fcpm = $check_fcpm->count();
+        return $check_fcpm;
     }
 
     public function findDesignationName(Request $r)
@@ -297,8 +345,25 @@ class AdminMemberController extends Controller
 
     public function memView($id)
     {
+        
+        // dd($id);
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
         // $id = request('mem_id');
-        $mem_view = DB::table('fcpm_mast')->orWhere('mem_id', 'like', '%' . $id . '%')
+        $mem_view = DB::table('fcpm_mast')->where('mem_id', $id_a)
             ->select('mem_id','mem_nm','guard_nm','profile_pic','mem_posting_place','mem_desig','entry_dt','memo_no')
             ->first();
         // dd( $mem_view);
@@ -307,6 +372,22 @@ class AdminMemberController extends Controller
     
     public function memEdit($id)
     {
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
         // $id = request('mem_id');
         $mem_dist = DB::table('district_mast')
         ->orderBy('district_nm')
@@ -319,7 +400,7 @@ class AdminMemberController extends Controller
             ->get();
 
         // dd( $mem_dist);
-        $mem_edit = DB::table('fcpm_mast')->orWhere('mem_id', 'like', '%' . $id . '%')
+        $mem_edit = DB::table('fcpm_mast')->where('mem_id', $id_a)
             ->select('state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district')
             ->first();
             // $mem_id=request('mem_id');
@@ -524,8 +605,24 @@ class AdminMemberController extends Controller
 
     public function memQueryView($id)
     {
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
         // $id = request('mem_id');
-        $mem_details = DB::table('fcpm_mast')->orWhere('mem_id', 'like', '%' . $id . '%')
+        $mem_details = DB::table('fcpm_mast')->where('mem_id', $id_a )
             ->select('mem_id','mem_nm','guard_nm','profile_pic','mem_posting_place','mem_desig','entry_dt','memo_no')
             ->first();
         // dd( $mem_details);
@@ -534,6 +631,22 @@ class AdminMemberController extends Controller
 
     public function memQueryEdit($id)
     {
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
         // $id = request('mem_id');
         $mem_dist = DB::table('district_mast')
         ->orderBy('district_nm')
@@ -546,7 +659,7 @@ class AdminMemberController extends Controller
             ->get();
 
         // dd( $mem_dist);
-        $mem_edit = DB::table('fcpm_mast')->orWhere('mem_id', 'like', '%' . $id . '%')
+        $mem_edit = DB::table('fcpm_mast')->where('mem_id', $id_a )
             ->select('state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district')
             ->first();
             // $mem_id=request('mem_id');
@@ -718,7 +831,8 @@ class AdminMemberController extends Controller
             ->update([
                 'export_stat' => 'Y'
             ]);
-     
+        
+            
      
     //   $mem_expo_entry = webUser::orderBy('mem_id','DESC');
     //   ->first();
@@ -756,110 +870,864 @@ class AdminMemberController extends Controller
 
     public function adminConfiLetter()
     {
-        $mem_id = request('mem_id');
-        $memo_no = request('memo_no');
         $memo_id = request('memo_id');
-
-        $print_stat = DB::table('print_letter_mast')->where('memo_id','!=','')->select('memo_id')->get();
+        $memo_no = request('memo_no');
+        $memo_stat = request('memo_stat');
+        // dd(  $memo_id);
+        $print_stat = DB::table('print_letter_mast')->where('memo_id','!=','')->select('memo_id')->first();
        
-// dd( $print_stat);
+        // dd( $memo_id);
         $query =  wbApplicant::where('mem_stat','A')->where('export_stat','Y')
         // ->whereNotNull('memo_no')
-        ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm','guard_nm','mem_quali','memo_id');
+        ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm','guard_nm','mem_quali','memo_id','joi_memo_id');
         // dd( $query);
-      
-        $all_memid = '';
-  
-            if($mem_id != '')
-            {
-            $query = $query->where('mem_id', 'like', '%' . $mem_id . '%');
-            }
+
 
             if($memo_no != '')
             {
             $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
             }
+            
+            if($memo_id != '')
+            {
+            $query = $query->where('memo_id', 'like', '%' . $memo_id . '%');
+            }
            
-            // if($memo_id == 'P')
-            // {
-            //     $print_stat = $print_stat->where('memo_id','!=', '');
-            // }
-            // elseif ($memo_id == 'NP') {
-            //     $print_stat = $print_stat->where('memo_id', '');
-            // }
+            if($memo_stat == 'P')
+            {
+                $query = $query->where('memo_id', '!=', '');
+            }
+            elseif ($memo_stat == 'NP') {
+                $query = $query->where('memo_id', '');
+            }
 
             $mem_query= $query->paginate(100);
             $mem_query_total= count($mem_query);
-            // dd($mem_query_total);
+            // dd($mem_query[0]);
             $mem_query->appends([
-                'mem_id' => $mem_id,
+                'memo_stat' => $memo_stat,
                 'memo_no' => $memo_no,
-                // 'memo_id' => $memo_id
+                'memo_id' => $memo_id
             ]);
    
         return view ('admin.membership.adminConfiLetter',compact('mem_query','mem_query_total','print_stat'));
     }
 
-    public function maPrint($id)
+    public function maPrint(Request $request, $id)
     {
-        dd('hfdk');
-    //     if (strlen($id) == 1) {
-    //         $id_a = '0000'.$id;
-    //     }
-    //     elseif (strlen($id) == 2) {
-    //         $id_a = '000'.$id;
-    //     }
-    //     elseif (strlen($id) == 3) {
-    //         $id_a = '00'.$id;
-    //     }
-    //     elseif (strlen($id) == 4) {
-    //         $id_a = '0'.$id;
-    //     }
-    //     elseif (strlen($id) == 5) {
-    //         $id_a = $id;
-    //     }
-    //     $ma_print = wbApplicant::where('mem_stat','A')
-    //     ->where('reg_status','!=','new')
-    //     ->where('mem_id', $id_a)
-    //     ->select('mem_id','memo_id')
-    //     ->first();
-    // dd($ma_print->mem_id);
+        // dd($id);
+       
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+        
+        $ma_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id)
+        ->where('mem_id', $id_a)
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id')
+        ->first();
+        // dd($ma_print->memo_no);
 
-    // wbApplicant::where('mem_id', $id_a)
-    //     ->update([
-    //         'memo_id' => 'Y'
-    //     ]);
+       
+        $max_memo_id = wbApplicant::orderBy('memo_id','desc')->value('memo_id');
+            if($max_memo_id =="")
+            {
+                $memo_id = "TJAPSKBSK/00001/".date('Y');
+            }
+            else{
+                $me_no = substr($max_memo_id,9,6);
+                $last_memo_id = ++$me_no;
+                $last = str_pad($last_memo_id,6,"0",STR_PAD_LEFT);
+                $memo_id = 'TJAPSKBSK'.$last.'/'.date('Y');
+            }
+           
+    // dd($memo_id );
+    
+            wbApplicant::where('mem_id', $id_a)
+            ->update([
+                'rand_no' => rand(),
+                'memo_id' => $memo_id
+            ]);
+           
+        
+        return view('admin.membership.adminConfiLetterPrint',compact('ma_print'));
+    }
+
+    public function maRePrint($id)
+    {
+        $memo_id =request('memo_id');
+        $print_dt = request('print_dt');
+        // dd( $print_dt);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $ma_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        ->where('mem_id', $id_a)
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no')
+        ->first();
+
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('print_dt');
+        // dd($print_letter_dtl);
+        // dd($ma_print->memo_no);
+        // return view('admin.membership.adminConfiLetterPrint',compact('ma_print'));
+        return view('admin.membership.adminConLetPriCom',compact('ma_print','print_letter_dtl'));
+
         
     }
 
+    public function printLetter(Request $request, $id)
+    {
+        $memo_id =request('memo_id');
+        $print_dt = request('print_dt');
+        dd( $print_dt);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $user_nam = Auth::guard('admin')->user()->admin_user_id;
+        // dd($user_nam);
+
+        $ipAddress = $request->ip();
+        // dd($ipAddress);
+        // $table->macAddress('device');
+        // $table->ipAddress('visitor');
+        // dd( $ipAddress);
+        $ma_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        ->where('mem_id', $id_a)
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id',)
+        ->first();
+        $max_print_id = DB::table('print_letter_mast')->orderBy('print_id','desc')->value('print_id');
+        // dd( $print);
+        if($max_print_id =="")
+        {
+            $print_id = "PRT0000000001";
+        }
+        else{
+            $lastp = substr($max_print_id,3,10);
+            $last_print_id = ++$lastp;
+            $last = str_pad($last_print_id,10,"0",STR_PAD_LEFT);
+            $print_id = 'PRT'.$last;
+        }
+// dd($print_id);
+
+        $print = new printConLetter;
+       
+        $print->print_id = $print_id;
+        $print -> memo_id = $ma_print->memo_id;
+        $print ->user_id = $user_nam;
+        $print ->ip_add = $ipAddress;
+        $print->print_dt = $print_dt;
+        // $print->print_dt = date('d-m-Y');
+        $print->print_time = date('H:i:s');
+        // dd($print);
+        $success =   $print -> save();
+
+       $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('print_dt');
+        // $ma_print->appends([
+        //         // 'mem_id' => $mem_id,
+        //         'memo_id' => $memo_id,
+        //         'print_dt' => $print_dt
+        //     ]);
+          
+        return view('admin.membership.adminConLetPriCom',compact('ma_print','print_letter_dtl'));
+
+    }
+    public function printAddress($id)
+    {
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $ma_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        ->where('mem_id', $id_a)
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no')
+        ->get();
+        return view('admin.membership.adminConLettAddress',compact('ma_print'));
+    }
+
+    public function conLetExcel()
+    {
+        return Excel::download(new confirmationLetter, 'confirmataon.xlsx');
+    }
+
+
     public function adminJoinLetter()
     {
-        return view ('admin.membership.adminJoinLetter');
+        // $mem_id = request('mem_id');
+        $memo_no = request('memo_no');
+        $mem_nm = request('mem_nm');
+        
+        $query = wbApplicant::where('mem_stat','A');
+        if($memo_no != '')
+        {
+        $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
+        }
+        
+        if($mem_nm != '')
+        {
+            // dd($mem_nm);
+            $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
+        }
+        $query = $query->where('reg_status','!=','new')->where('memo_id','!=','');
+        // ->whereNull('joi_memo_id')
+        $query = $query->orWhere('joi_memo_id','') ->whereNull('joi_memo_id');
+        $query = $query->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id');
+
+        $join_lt=  $query->paginate(100);
+        $join_lt_total= count($join_lt);
+
+        // dd($join_lt );
+        // $join_lt->appends([
+        //     // 'mem_id' => $mem_id,
+        //     'memo_no' => $memo_no,
+        //     'mem_nm' => $mem_nm
+        // ]);
+      
+        
+        return view ('admin.membership.adminJoinLetter',compact('join_lt','join_lt_total',));
     }
+
+    public function joinPrint(Request $request, $id)
+    {
+    //    dd($id);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $join_print = wbApplicant::where('mem_stat','A')
+            ->where('reg_status','!=','new')
+            // ->where('mem_id', $id) 
+            ->where('mem_id', $id_a) 
+            ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id')
+            ->first();
+        // dd($join_print);
+
+        $print = DB::table('print_letter_mast')
+        // ->where('print_id','$pid')
+       ->where('print_id','!=', '')
+    //    ->where('memo_id','memo_id')
+       ->first();
+
+    //    dd($print);
+   // dd( $print[0]->print_id);
+       
+        $max_join_memo_id = wbApplicant::orderBy('joi_memo_id','desc')->value('joi_memo_id');
+            if($max_join_memo_id =="")
+            {
+                $joi_memo_id = "TJAPSKBSKJ/00001/".date('Y');
+            }
+            else{
+                $me_no = substr($max_join_memo_id,10,6);
+                $last_memo_id = ++$me_no;
+                $last = str_pad($last_memo_id,6,"0",STR_PAD_LEFT);
+                $joi_memo_id = 'TJAPSKBSKJ'.$last.'/'.date('Y');
+            }
+           
+    // dd($joi_memo_id );
+    
+            // wbApplicant::where('mem_id', $id_a)
+            wbApplicant::where('mem_id', $id_a)
+            ->update([
+                'joi_rand_no' => rand(),
+                'joi_memo_id' => $joi_memo_id
+            ]);
+        return view('admin.membership.adminJoinLetterPrint',compact('join_print'));
+    }
+
+    public function joinPrintCom( $id)
+    {
+       
+        $memo_id = request('memo_id');
+        $print_dt = request('print_dt');
+        // dd($memo_id);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $join_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no')
+        ->first();
+
+        DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->update([
+            'joining_letter_stat' => 'T',
+            'joining_letter_memo_id' => $join_print->joi_memo_id,
+            'joining_letter_dt' => $print_dt
+        ]);
+
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('joining_letter_dt');
+        // dd($print_letter_dtl);
+
+        return view('admin.membership.adminJoinLetterPrintCom',compact('join_print','print_letter_dtl'));
+
+    }
+   
 
     public function adminRePrintJoiningLetter()
     {
-        return view ('admin.membership.adminRePrintJoinLetter');
+        $memo_no = request('memo_no');
+        $mem_nm = request('mem_nm');
+        $joi_memo_id = request('joi_memo_id');
+
+        // dd($joi_memo_id);
+
+        
+        $query = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        ->where('joi_memo_id','!=','')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no',);
+        if($memo_no != '')
+        {
+        $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
+        }
+        
+        if($mem_nm != '')
+        {
+            // dd($mem_nm);
+            $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
+        }
+       if($joi_memo_id != '')
+       {
+        $query = $query->where('joi_memo_id', 'like', '%' . $joi_memo_id . '%');
+  
+       }
+        $re_print_join=  $query->paginate(100);
+        $re_join_lt_total= count($re_print_join);
+
+       
+        // dd($re_join_lt_total );
+        return view ('admin.membership.adminRePrintJoinLetter',compact('re_print_join','re_join_lt_total'));
     }
 
-    public function adminDeclarationLetter()
+    public function joinRePrintCom($id)
     {
-        return view ('admin.membership.adminDeclarationLetter');
+    //    dd($id);
+        // $memo_id = request('memo_id');
+        // $print_dt = request('print_dt');
+        // dd($memo_id);
+        
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        
+        // dd($memo_id);
+
+        $join_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no')
+        ->first();
+        $memo_id = $join_print['memo_id'];
+        
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)->value('joining_letter_dt');
+           
+            // dd( $memo_id);
+        // ->first();
+        // ->get();
+
+        return view('admin.membership.adminJoinLetterPrintCom',compact('join_print','print_letter_dtl'));
+
+    }
+
+    public function declarationLetter()
+    {
+        $memo_no = request('memo_no');
+        $mem_nm = request('mem_nm');
+        
+        $query = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        ->where('joi_memo_id','!=','')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id',);
+        if($memo_no != '')
+        {
+        $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
+        }
+        
+        if($mem_nm != '')
+        {
+            // dd($mem_nm);
+            $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
+        }
+      
+        $dec_ltr=  $query->paginate(100);
+        $dec_lt_total= count($dec_ltr);
+        // dd( $dec_lt_total);
+        return view ('admin.membership.adminDeclarationLetter',compact('dec_ltr','dec_lt_total'));
+    }
+
+    public function declPrint(Request $request,$id)
+    {
+         //    dd($id);
+         if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $dec_print = wbApplicant::where('mem_stat','A')
+            ->where('reg_status','!=','new')
+            // ->where('mem_id', $id) 
+            ->where('mem_id', $id_a) 
+            ->where('joi_memo_id','!=','')
+            // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no')
+            ->first();
+        // dd($dec_print);
+
+        $print = DB::table('print_letter_mast')
+        // ->where('print_id','$pid')
+       ->where('print_id','!=', '')
+    //    ->where('memo_id','memo_id')
+       ->first();
+
+    //    dd($print);
+   // dd( $print[0]->print_id);
+       
+        $max_dec_memo_id = wbApplicant::orderBy('dec_memo_id','desc')->value('dec_memo_id');
+            if($max_dec_memo_id =="")
+            {
+                $dec_memo_id = "TJAPSKBSKD/00001/".date('Y');
+            }
+            else{
+                $me_no = substr($max_dec_memo_id,10,6);
+                $last_memo_id = ++$me_no;
+                $last = str_pad($last_memo_id,6,"0",STR_PAD_LEFT);
+                $dec_memo_id = 'TJAPSKBSKD'.$last.'/'.date('Y');
+            }
+            // dd($dec_memo_id );
+            wbApplicant::where('mem_id', $id_a)
+            ->update([
+                'dec_rand_no' => rand(),
+                'dec_memo_id' => $dec_memo_id
+            ]);
+
+            
+            return view('admin.membership.adminDecLetterPrint',compact('dec_print'));
+    }
+
+    public function declPrintCom($id)
+    {
+
+        $memo_id = request('memo_id');
+        $print_dt = request('print_dt');
+        // dd($print_dt);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $dec_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        // ->where('dec_memo_id','!=','')
+        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no')
+        ->first();
+
+        DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->update([
+            'declear_letter_stat' => 'T',
+            'dec_memo_id' => $dec_print->dec_memo_id,
+            'dec_letter_dt' => $print_dt
+        ]);
+
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('dec_letter_dt');
+        // dd($print_letter_dtl);
+
+        return view('admin.membership.adminDecLetterPrintCom',compact('dec_print','print_letter_dtl'));
     }
 
     public function adminRepnDeclarationLetter()
     {
-        return view ('admin.membership.adminReprintDeclarationLetter');
+        $memo_no = request('memo_no');
+        $mem_nm = request('mem_nm');
+
+        $query = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id_a) 
+        ->where('dec_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no');
+
+        if($memo_no != '')
+        {
+        $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
+        }
+        
+        if($mem_nm != '')
+        {
+            // dd($mem_nm);
+            $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
+        }
+
+        $dec_re_print=  $query->paginate(100);
+        $dec_re_print_total= count($dec_re_print);
+        return view ('admin.membership.adminReprintDeclarationLetter',compact('dec_re_print','dec_re_print_total'));
+    }
+
+    public function decRePrintCom($id)
+    {
+        // $memo_id = request('memo_id');
+        // $print_dt = request('print_dt');
+        // dd($print_dt);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $dec_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        // ->where('dec_memo_id','!=','')
+        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no')
+        ->first();
+        $memo_id = $dec_print->memo_id;
+        // dd($memo_id);
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('dec_letter_dt');
+        // dd($print_letter_dtl);
+
+        return view('admin.membership.adminDecLetterPrintCom',compact('dec_print','print_letter_dtl'));
     }
 
     public function adminAppointmentLetter()
     {
-        return view ('admin.membership.adminAppointmentLetter');
+        $memo_no = request('memo_no');
+        $mem_nm = request('mem_nm');
+        
+        $query = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        ->where('dec_memo_id','!=','')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion',   'guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id','app_memo_id','app_rand_no');
+        if($memo_no != '')
+        {
+        $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
+        }
+        
+        if($mem_nm != '')
+        {
+            // dd($mem_nm);
+            $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
+        }
+      
+        $app_ltr=  $query->paginate(100);
+        $app_lt_total= count($app_ltr);
+        // dd( $app_lt_total);
+        return view ('admin.membership.adminAppointmentLetter',compact('app_ltr','app_lt_total'));
+    }
+
+    public function appltrPrint(Request $request,$id)
+    {
+        
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $app_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        ->where('dec_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id')
+        ->first();
+    // dd($app_print);
+
+    $print = DB::table('print_letter_mast')
+    // ->where('print_id','$pid')
+   ->where('print_id','!=', '')
+//    ->where('memo_id','memo_id')
+   ->first();
+
+//    dd($print);
+// dd( $print[0]->print_id);
+   
+    $max_app_memo_id = wbApplicant::orderBy('app_memo_id','desc')->value('app_memo_id');
+        if($max_app_memo_id =="")
+        {
+            $app_memo_id = "TJAPSKBSKA/00001/".date('Y');
+        }
+        else{
+            $me_no = substr($max_app_memo_id,10,6);
+            $last_memo_id = ++$me_no;
+            $last = str_pad($last_memo_id,6,"0",STR_PAD_LEFT);
+            $app_memo_id = 'TJAPSKBSKA'.$last.'/'.date('Y');
+        }
+        // dd($app_memo_id );
+
+        wbApplicant::where('mem_id', $id_a)
+        ->update([
+            'app_rand_no' => rand(),
+            'app_memo_id' => $app_memo_id
+        ]);
+
+        return view('admin.membership.adminAppLetterPrint',compact('app_print'));  
+    }
+
+    public function appPrintCom($id)
+    {
+        $memo_id = request('memo_id');
+        $print_dt = request('print_dt');
+        // dd($print_dt);
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $app_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        ->where('dec_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no')
+        ->first();
+        
+        DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->update([
+            'app_letter_stat' => 'T',
+            'app_memo_id' => $app_print->app_memo_id,
+            'app_letter_dt' => $print_dt
+        ]);
+
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('app_letter_dt');
+        // dd($print_letter_dtl);
+
+        return view('admin.membership.adminAppLtrPrintCom',compact('app_print','print_letter_dtl'));
     }
 
     public function adminRepnAppointmentLetter()
     {
-        return view ('admin.membership.adminReprintAppointmentLetter');
+        $memo_no = request('memo_no');
+        $mem_nm = request('mem_nm');
+
+        $query = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id_a) 
+        ->where('app_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id');
+        // ->first();
+        if($memo_no != '')
+        {
+        $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
+        }
+        
+        if($mem_nm != '')
+        {
+            // dd($mem_nm);
+            $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
+        }
+      
+        $app_ltr=  $query->paginate(100);
+        $app_lt_total= count($app_ltr);
+
+        return view ('admin.membership.adminReprintAppointmentLetter',compact('app_ltr','app_lt_total'));
     }
 
+    public function appRePrintCom($id)
+    {
+        // $memo_id = request('memo_id');
+        // $print_dt = request('print_dt');
+
+        if (strlen($id) == 1) {
+            $id_a = '0000'.$id;
+        }
+        elseif (strlen($id) == 2) {
+            $id_a = '000'.$id;
+        }
+        elseif (strlen($id) == 3) {
+            $id_a = '00'.$id;
+        }
+        elseif (strlen($id) == 4) {
+            $id_a = '0'.$id;
+        }
+        elseif (strlen($id) == 5) {
+            $id_a = $id;
+        }
+
+        $app_print = wbApplicant::where('mem_stat','A')
+        ->where('reg_status','!=','new')
+        // ->where('mem_id', $id) 
+        ->where('mem_id', $id_a) 
+        ->where('dec_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        ->select('mem_id','memo_id','mem_nm','mem_add','district','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no')
+        ->first();
+
+        $memo_id = $app_print->memo_id;
+        // dd($memo_id);
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        ->value('app_letter_dt');
+        // dd($print_letter_dtl);
+
+        return view('admin.membership.adminAppLtrPrintCom',compact('app_print','print_letter_dtl'));
+    }
 }

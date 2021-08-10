@@ -17,8 +17,8 @@
                 <div class='row'>
                     <div class="col-sm-4" >
                         <input type="text" id="state_id" class="register_input" 
-                        name="state_id" value="{{ old('state_id') }}" 
-                        required autocomplete="off"/>
+                        name="state_id" value="{{ request('state_id') }}" 
+                         autocomplete="off"/>
                         <label for="register_input" placeholder="Enter State Id "></label>
                             {{-- <input type="text" placeholder="State Id" id="state_id"
                             name="state_id" class="form-controls"
@@ -27,8 +27,8 @@
                     </div>
                     <div class="col-sm-4">
                         <input type="text" id="state_nm" class="register_input"
-                        name="state_nm" value="{{ old('state_nm') }}" 
-                        required autocomplete="off"/>
+                        name="state_nm" value="{{ request('state_nm') }}" 
+                         autocomplete="off"/>
                     <label for="register_input" placeholder="Enter State Name "></label>
                             {{-- <input type="text" placeholder="State Name" id="state_nm"
                                 name="state_nm" class="form-controls"
@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-sm-1" style='margin-left:-50px'>
                         <a href="{{url('/admin-state-view')}}">
-                            <button class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
+                            <button type="button" class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
                         </a>    
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <th>Name</th>
                         <th>Head Office</th>
                         <th>Contact No</th>
-                        {{-- <th>Color Name</th> --}}
+                        <th>Color Name</th>
                         <th>Banner One</th>
                         <th>Banner Two</th>
                         <th>Banner Three</th>
@@ -71,7 +71,7 @@
                             <td>{{ $state["state_nm"]}}</td>
                             <td>{{ $state["head_off_nm"]}}</td>
                             <td>{{ $state["contact_no"]}}</td>
-                            {{-- <td>{{ $state["color_nm"]}}</td> --}}
+                            <td style='background-color:{{ $state["color_nm"] }}'></td>
                             <td>
                                 <img src="{{ asset('admin_state_upload_one/'.$state["Banner_one"]) }}" width="50" height="50" />
                             </td>

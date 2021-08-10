@@ -159,7 +159,7 @@
                     </div>
                 </div>
                 <div class="form-group" style='text-align: center;padding-top:15px; margin-left:-50px'>       
-                    <input type="submit" value="Register" class="blue_button" >
+                    <input type="submit" value="Update" class="blue_button" >
                 </div>
             </form>
         </div>

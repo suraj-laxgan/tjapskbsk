@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 	<style>
-		.mail_bg{
+		/* .mail_bg{
 			background-image:url('https://tjapskbsk.in/office/images/logomark3.png');
 		    background-color: #cccccc;
 		    background-position: center;
 		    background-repeat: no-repeat;
 		    background-size: cover;
 		    position: relative;
-		}
+		} */
 	</style>
 </head>
 <body>
@@ -24,7 +23,7 @@
 				<table width="100%" border="0" cellspacing="0" cellpadding="0">
 				  <tr>
 				  	<td width="5%"></td>
-					<td width="25%" valign="top"><img src="https://tjapskbsk.in/office/images/mail.png" width="80%"></td>
+					<td width="25%" valign="top"><img src="" width="80%"></td>
 					<td width="65%" align="center" valign="top" style="padding-top:10px;">
 						<div style="color:rgb(0,32,96); font-size:18px; font-weight:700;">TAPSIL JATI ADIBASI PRAKTAN SAINIK</div>
 						<div style="color:rgb(0,32,96); font-size:25px; font-weight:700;">KRISHI BIKASH SHILPA KENDRA</div>

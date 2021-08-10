@@ -46,19 +46,19 @@
                             <form method="GET" action="{{ url('/ad-expo-member') }}"  enctype="multipart/form-data">
                                     <div class="row">
                                         <div class="col-sm-2" >
-                                            <input type="text" id="memo_no" class="register_input" name="memo_no"  />
+                                            <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{ request('memo_no') }}" />
                                             <label for="register_input" placeholder="Enter Memo No "></label>
                                         </div>
                                         <div class="col-sm-2" >
-                                            <input type="text" id="mem_nm" class="register_input" name="mem_nm"  />
+                                            <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ request('mem_nm') }}" />
                                             <label for="register_input" placeholder="Enter Member Name "></label>
                                         </div>
                                         <div class="col-sm-2" >
-                                            <input type="text" id="mem_posting_place" class="register_input" name="mem_posting_place"  />
+                                            <input type="text" id="mem_posting_place" class="register_input" name="mem_posting_place" value="{{ request('mem_posting_place') }}" />
                                             <label for="register_input" placeholder="Enter Posting place "></label>
                                         </div>
                                         <div class="col-sm-2" >
-                                            <input type="text" id="mem_desig" class="register_input" name="mem_desig"  />
+                                            <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ request('mem_desig') }}" />
                                             <label for="register_input" placeholder="Enter Designation "></label>
                                         </div>
                                         <div class="col-sm-2" >
@@ -66,7 +66,10 @@
                                             <select name="media_nm" id="media_nm" class="form-controls">
                                                 <option value="">Select Media Name</option>
                                                 @foreach($media_na as $media)
-                                                    <option value="{{$media->media_nm}}">{{$media->media_nm}}</option>
+
+                                                <option value="{{$media->media_nm}}" {{(request("media_nm") == $media->media_nm ? "selected":"")}}>
+                                                {{$media->media_nm}}</option>
+
                                                 @endforeach
                                             </select>
                                         </div>
@@ -75,7 +78,7 @@
                                         </div>
                                         <div class="col-sm-1" style='margin-left:-40px'>
                                             <a href="{{url('/ad-expo-member')}}">
-                                                <button class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
+                                                <button type='button'class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
                                             </a>    
                                         </div>
                                     </div>

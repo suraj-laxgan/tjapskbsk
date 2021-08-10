@@ -92,9 +92,9 @@ class AdminMailController extends Controller
         'mem_email'=>$to_mail->mem_email
         ];
         //send to email
-        Mail::to('kbskdmt.hr@gmail.com')->send(new WestBengalMail($data));
+        // Mail::to('kbskdmt.hr@gmail.com')->send(new WestBengalMail($data));
 
-        // Mail::to($to_mail->mem_email)->cc(['kbskdmt.hr@gmail.com'])->send(new WestBengalMail($data));
+        Mail::to($to_mail->mem_email)->cc(['kbskdmt.hr@gmail.com'])->send(new WestBengalMail($data));
 
         return redirect()->route('add.mailWb')->with('msg','Mail Send Successfully');
     }
@@ -186,7 +186,9 @@ class AdminMailController extends Controller
       'add_dist'=>$to_mail->add_dist,
       'mem_email'=>$to_mail->mem_email
     ];
-    Mail::to('kbskdmt.hr@gmail.com')->send(new BiharMail ($data));
+    // Mail::to('kbskdmt.hr@gmail.com')->send(new BiharMail ($data));
+    Mail::to($to_mail->mem_email)->cc(['kbskdmt.hr@gmail.com'])->send(new BiharMail($data));
+
     // return back()->withInput()->with('msg','Mail Send Successfully');
     return redirect()->route('add.mail')->with('msg','Mail Send Successfully');
     
@@ -280,8 +282,8 @@ class AdminMailController extends Controller
      'mem_email'=>$to_mail->mem_email
     ];
     //send to email
-    Mail::to('kbskdmt.hr@gmail.com')->send(new JharkhandMail($data));
-    // Mail::to($to_mail->mem_email)->cc(['kbskdmt.hr@gmail.com'])->send(new JharkhandMail($data));
+    // Mail::to('kbskdmt.hr@gmail.com')->send(new JharkhandMail($data));
+    Mail::to($to_mail->mem_email)->cc(['kbskdmt.hr@gmail.com'])->send(new JharkhandMail($data));
     // return back()->withInput()->with('msg','Mail Send Successfully');
     return redirect()->route('add.mailJh')->with('msg','Mail Send Successfully');
 

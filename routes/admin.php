@@ -95,38 +95,84 @@ Route::get('/ad-expo-member',[AdminMemberController::class,'adminExpoMember'])->
 Route::get('/ad-mem-export/{id}',[AdminMemberController::class,'memExport'])->name('admin.Export');
 
 // Confirmation Letter
-
 Route::get('ad-confi-letter',[AdminMemberController::class,'adminConfiLetter'])->name('ad.adminConfiLt');
-Route::get('/ad-ma-print/{id}',[AdminMemberController::class,'maPrint'])->name('ma.print');
+Route::get('ad-ma-print/{id}',[AdminMemberController::class,'maPrint'])->name('ma.print');
+Route::get('ad-ma-reprint/{id}',[AdminMemberController::class,'maRePrint'])->name('ma.rreprint');
+Route::get('ad-printletter/{id}',[AdminMemberController::class,'printLetter'])->name('ma.printlt');
+Route::get('ad-ma-adress/{id}',[AdminMemberController::class,'printAddress'])->name('ma.printadd');
+Route::get('con-let-excel', [AdminMemberController::class, 'conLetExcel'])->name('conLetExcel');
+
+
+
 
 // Joining Letter
 Route::get('ad-joining-letter',[AdminMemberController::class,'adminJoinLetter'])->name('ad.adminJoinLt');
+Route::get('ad-join-print/{id}',[AdminMemberController::class,'joinPrint'])->name('join.print');
+Route::get('ad-join-print-com/{id}',[AdminMemberController::class,'joinPrintCom'])->name('join.printcom');
 
+// Reprint Joining Letter
 Route::get('ad-repjoining-letter',[AdminMemberController::class,'adminRePrintJoiningLetter'])->name('ad.adminRepriJoinLt');
+Route::get('ad-join-reprint-com/{id}',[AdminMemberController::class,'joinRePrintCom'])->name('join.reprintcom');
 
-Route::get('ad-decal-letter',[AdminMemberController::class,'adminDeclarationLetter'])->name('ad.adminDeclaLt');
+// Declaration Letter
+Route::get('ad-decal-letter',[AdminMemberController::class,'declarationLetter'])->name('ad.adminDeclaLt');
+Route::get('ad-decal-ltr/{id}',[AdminMemberController::class,'declPrint'])->name('decl.print');
+Route::get('ad-decal-ltr-com/{id}',[AdminMemberController::class,'declPrintCom'])->name('dec.reprintCom');
 
+// Reprint Declaration Letter
 Route::get('ad-reprindecal-letter',[AdminMemberController::class,'adminRepnDeclarationLetter'])->name('ad.adminRepnDeclaLt');
+Route::get('ad-reprindecal-com/{id}',[AdminMemberController::class,'decRePrintCom'])->name('dec.reprintcom');
 
+// Appointment Letter
 Route::get('ad-appointment-letter',[AdminMemberController::class,'adminAppointmentLetter'])->name('ad.adminAppointlaLt');
+Route::get('ad-app-ltr/{id}',[AdminMemberController::class,'appltrPrint'])->name('app.print');
+Route::get('ad-app-ltr-com/{id}',[AdminMemberController::class,'appPrintCom'])->name('app.printCom');
 
+// Reprint Appointment Letter
 Route::get('ad-rep-appointment-letter',[AdminMemberController::class,'adminRepnAppointmentLetter'])->name('ad.adminRepAppointlaLt');
+Route::get('ad-reappointment-com/{id}',[AdminMemberController::class,'appRePrintCom'])->name('app.reprintcom');
+
 
 // ########### Admin Membership End ##########
 
-//  Master Entry
+//  *******Admin Master Entry Start *******
+// Designation
 Route::get('ad-mas',[AdminMasterEntryController::class,'adminMas'])->name('ad.mas');
-
 Route::get('ad-designation',[AdminMasterEntryController::class,'adminDesignation'])->name('ad.designation');
+Route::post('ad-desig',[AdminMasterEntryController::class,'adminDesig'])->name('ad.desig');
+Route::get('ad-desig-edit/{id}',[AdminMasterEntryController::class,'desigEdit'])->name('desig.edit');
+Route::post('/ad-desig-edit-upload',[AdminMasterEntryController::class,'desigEditUp'])->name('admin.desigup');
+Route::get('delete-desig/{id}',[AdminMasterEntryController::class,'desigDelete'])->name('desig.del');
 
+//  Add organiser
 Route::get('ad-organiser',[AdminMasterEntryController::class,'adminOrganiser'])->name('add.Organiser');
+Route::post('/ad-organiser-save',[AdminMasterEntryController::class,'organiserAdd'])->name('save.Organiser');
+Route::get('delete-organiser/{id}',[AdminMasterEntryController::class,'organiserDelete'])->name('organiser.del');
 
+
+// Add District
 Route::get('ad-districts',[AdminMasterEntryController::class,'adminAddDistrict'])->name('add.District');
+Route::post('/ad-districts-save',[AdminMasterEntryController::class,'districtsAdd'])->name('save.districts');
+Route::get('ad-district-edit/{id}',[AdminMasterEntryController::class,'districtEdit'])->name('dis.edit');
+Route::post('/ad-district-up',[AdminMasterEntryController::class,'districtsUp'])->name('up.dist');
+Route::get('/delete-district/{id}',[AdminMasterEntryController::class,'districtDelete'])->name('district.del');
 
+// Add Block
 Route::get('ad-block',[AdminMasterEntryController::class,'adminAddBlock'])->name('add.Block');
+Route::post('/ad-block-save',[AdminMasterEntryController::class,'blockAdd'])->name('block.add');
+Route::get('ad-block-edit/{id}',[AdminMasterEntryController::class,'blockEdit'])->name('block.edit');
+Route::post('/ad-block-up',[AdminMasterEntryController::class,'blockUp'])->name('block.up');
+Route::get('/delete-block/{id}',[AdminMasterEntryController::class,'blockDelete'])->name('block.del');
 
+
+// Add Staff
 Route::get('ad-staff',[AdminMasterEntryController::class,'adminAddStaff'])->name('add.Staff');
+Route::get('ad-staff-edit/{id}',[AdminMasterEntryController::class,'staffEdit'])->name('staff.edit');
+Route::get('ad-staff-view/{id}',[AdminMasterEntryController::class,'staffView'])->name('staff.view');
+Route::post('/ad-staff-up',[AdminMasterEntryController::class,'staffUp'])->name('staff.up');
+Route::post('/ad-staff-save',[AdminMasterEntryController::class,'staffSave'])->name('staff.save');
 
+// Create User
 Route::get('ad-cuser',[AdminMasterEntryController::class,'adminCreateUser'])->name('add.Creuser');
 Route::post('ad-cuser',[AdminMasterEntryController::class,'addCreateUser'])->name('add.Createuse');
 
@@ -135,8 +181,14 @@ Route::post('ad-cuser',[AdminMasterEntryController::class,'addCreateUser'])->nam
 // Function
 Route::get('ad-function',[AdminFunctionController::class,'adminFunction'])->name('add.function');
 Route::get('ad-mem-authentication',[AdminFunctionController::class,'adminMemAuthentication'])->name('add.MemAuthent');
+
+// Grant Revoke Office Staff
 Route::get('ad-gr-office-staff',[AdminFunctionController::class,'adminGrOfficeStaff'])->name('add.GrOfStaff');
+Route::post('ad-gan-rvoff-staff',[AdminFunctionController::class,'revokeStaffUp'])->name('add.re.staff');
+
+// Active/ Inactive Member
 Route::get('ad-ac-in-mem',[AdminFunctionController::class,'adminActIntMember'])->name('add.ActIntMem');
+Route::post('ad-revoke-mem-up',[AdminFunctionController::class,'revokeMemberUp'])->name('add.revoke');
 
 
 

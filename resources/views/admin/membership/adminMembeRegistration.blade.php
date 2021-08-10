@@ -273,7 +273,7 @@
             datatype : 'html',
             success:function(data)
             {
-            var place_of_post = '<option value="">Select</option>';
+            var place_of_post = '<option value="">Select Posting Place</option>';
                         $.each( data, function( index, value )
                         {
                             //console.log(index);

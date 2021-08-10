@@ -203,7 +203,7 @@ $curtimestamp = time();
       box-sizing: border-box;
       width: 100%;
       background: #fff;
-      height: calc(10em + 2px);
+      height: calc(4em + 2px);
       padding: 6px;
       font-size: 16px;
       border: 1px solid #bababa;
@@ -225,7 +225,7 @@ $curtimestamp = time();
       .register_textarea + label {
       display: block;
       font-size: 16px;
-      height: calc(10em + 2px);
+      height: calc(4em + 2px);
       line-height: 1;
       padding-top: calc(1em + 1px);
       margin-top: calc(-10em - 2px);

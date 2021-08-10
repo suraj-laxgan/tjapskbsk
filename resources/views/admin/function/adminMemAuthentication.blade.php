@@ -13,9 +13,8 @@
                 <tr>
                     <td width="0%">&nbsp;</td>
                     <td width="100%">
-                        <div class="card-body">
+                        <div class="card-body" style="margin-top: -15px">
                             <form method="GET" action="{{ url('#') }}"  enctype="multipart/form-data">
-                                @csrf 
                                 <div class="row" >
                                     <div class="col-sm-4" >
                                         <!-- <label>Memo No :</label>&nbsp;<font color="#FF0000">*</font> -->
@@ -27,19 +26,19 @@
                                     </div>
                                     <div class="col-sm-1" >
                                         <!-- <label>&nbsp;&nbsp;</label> -->
-                                        <input type="submit" name='action_form' value="Search" class="blue_button">
+                                        <button type='submit' class='button22' id="search_tn_1"><i class="fa fa-search" style="font-size:20px"></i></button>
                                     </div>
                                     <div class="col-sm-2" style='margin-left:-30px'>
                                         <!-- <label>&nbsp;&nbsp;</label> -->
-                                        <a href="{{url('#')}}">
-                                            <button type="button" class="blue_button" >Refresh</button>
+                                        <a href="{{url('ad-decal-letter')}}">
+                                            <button class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
                                         </a>    
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="card-body" style='margin-top:-30px'>
-                            <div style="color:gray"> <b>View Members Authentication :</b></div>
+                            {{-- <div style="color:gray"> <b>View Members Authentication :</b></div> --}}
                                 <table   id="customers">
                                     <tr >
                                         <th>Name</th>

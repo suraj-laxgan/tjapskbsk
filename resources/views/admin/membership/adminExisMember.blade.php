@@ -29,38 +29,47 @@
                                         <!-- <label>Select Type :</label>&nbsp; -->
                                         <select name="des_type" id="des_type" class="form-controls" onChange="findDesignationName()">
                                             <option value="">Select Office</option>
-                                            <option value="HEAD OFFICE">HEAD OFFICE</option>
-                                            <option value="DISTRICT OFFICE">DISTRICT OFFICE</option>
-                                            <option value="BLOCK OFFICE">BLOCK OFFICE</option>
-                                            <option value="NO OFFICE">NO OFFICE</option>
+                                            <option value="HEAD OFFICE" {{ (request("des_type") == "HEAD OFFICE" ? "selected":"") }}>HEAD OFFICE</option>
+
+                                            <option value="DISTRICT OFFICE" {{ (request("des_type") == "DISTRICT OFFICE" ? "selected":"") }}>DISTRICT OFFICE</option>
+
+                                            <option value="BLOCK OFFICE" {{ (request("des_type") == "BLOCK OFFICE" ? "selected":"") }}>BLOCK OFFICE</option>
+
+                                            <option value="NO OFFICE" {{ (request("des_type") == "NO OFFICE" ? "selected":"") }}>NO OFFICE</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-2" >
                                         <select name="district" id="district" class="form-controls">
                                             <option value="">Select District</option>
-                                            @foreach($mem_dist as $dist)
-                                                <option value="{{$dist->district_nm}}">{{$dist->district_nm}}</option>
+                                            {{-- @foreach($mem_dist as $dist)
+                                                <option value="{{$posting->block_nm}}">{{$dist->district_nm}}</option>
+                                            @endforeach --}}
+
+                                            @foreach ($mem_dist as $dist)
+                                                <option value="{{ $dist->district_nm }}" {{ (request("district") == $dist->district_nm ? "selected":"") }}>
+                                                    {{ $dist->district_nm }}</option>  
+
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-2" >
-                                        <input type="text" id="memo_no" class="register_input" name="memo_no" autocomplete="off" />
+                                        <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{request('memo_no')}}"autocomplete="off" />
                                         <label for="register_input" placeholder="Enter Memo No *"></label>
                                     </div>
                                     <div class="col-sm-2" >
-                                        <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ old('mem_nm') }}" autocomplete="off" />
+                                        <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ request('mem_nm') }}" autocomplete="off" />
                                         <label for="register_input" placeholder="Enter Member Name *"></label>
                                     </div>
                                     <div class="col-sm-2" >
                                         <select name="mem_posting_place" id="mem_posting_place" class="form-controls">
                                             <option value="">Select Posting place</option>
                                             @foreach($block_name as $posting)
-                                                <option value="{{$posting->block_nm}}">{{$posting->block_nm}}</option>
+                                                <option value="{{$posting->block_nm}}"{{ (request("mem_posting_place") == $posting->block_nm ? "selected":"") }}>{{$posting->block_nm}}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-2" >
-                                        <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ old('mem_desig') }}" autocomplete="off" />
+                                        <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ request('mem_desig') }}" autocomplete="off" />
                                         <label for="register_input" placeholder="Enter Designation *"></label>
                                     </div>
                                 </div>
@@ -69,7 +78,7 @@
                                         <select name="media_nm" id="media_nm" class="form-controls">
                                             <option value="">Select Media Name</option>
                                             @foreach($media_na as $media)
-                                                <option value="{{$media->media_nm}}">{{$media->media_nm}}</option>
+                                                <option value="{{$media->media_nm}}" {{ (request("media_nm") == $media->media_nm? "selected":"") }}>{{$media->media_nm}}</option>
                                             @endforeach
                                         </select>
                                         <!-- <label>Media Name :</label>&nbsp; -->
@@ -78,20 +87,18 @@
                                             </select> --}}
                                     </div>
                                     <div class="col-sm-2" >
-                                        <input type="text" id="guard_nm" class="register_input" name="guard_nm" value="{{ old('guard_nm') }}" autocomplete="off" />
+                                        <input type="text" id="guard_nm" class="register_input" name="guard_nm" value="{{ request('guard_nm') }}" autocomplete="off" />
                                         <label for="register_input" placeholder="Enter Guardian name *"></label>
                                     </div>
                                     <div class="col-sm-2" >
-                                        <input type="text" id="#" class="register_input" name="#" value="{{ old('#') }}" />
+                                        <input type="text" id="rand_no" class="register_input" name="rand_no" value="{{ request('rand_no') }}" />
                                         <label for="register_input" placeholder="Enter Barcode No"></label>
                                     </div>
                                     <div class="col-sm-1">
                                         <button type='submit' class='button22' id="search_tn_1"><i class="fa fa-search" style="font-size:20px"></i></button>
                                     </div>
                                     <div class="col-sm-1" style='margin-left:-40px'>
-                                        <a href="{{url('/ad-exismember')}}">
-                                            <button class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
-                                        </a>    
+                                            <button type="button" class='button22' onclick="window.location.href='{{url('ad-exismember')}}'"> <i class="fa fa-refresh" style="font-size:20px"></i></button>
                                     </div>
                                 </div>
                             </form>
