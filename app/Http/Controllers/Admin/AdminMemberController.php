@@ -16,6 +16,7 @@ use App\Exports\allMemberQueryExport;
 use App\Exports\confirmationLetter;
 use Illuminate\Support\Collection;
 use Auth;
+use Illuminate\Support\Str;
 
 class AdminMemberController extends Controller
 {
@@ -37,8 +38,8 @@ class AdminMemberController extends Controller
 
         $state_name = DB::table('state_mast')
         // ->where('state_code','!=','')
-            ->select('state_nm','state_code')
-            ->orderBy('state_nm','DESC')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
             ->get();
         //   dd($state_name) ; 
         return view ('admin.membership.adminMembeRegistration', compact('mem_dist','state_name'));
@@ -68,6 +69,8 @@ class AdminMemberController extends Controller
     //   $max_memo_no = DB::table('memo_no_max')->get();
     //   dd( $max_memo_no);
 
+   
+    
         $check_post = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('des_no_post');
 
         $check_fcpm = $this->check_fcpm($request);
@@ -88,12 +91,22 @@ class AdminMemberController extends Controller
                 $mem_id = $me_id;
             }
             // dd( $max_mem_id);
+           
+            // $state_code =$request->state_nm;
 
-            $state_code =$request->state_nm;
-            // dd( $state_code);
+            // $max_new_id = wbApplicant::orderBy('new_id','DESC')->orWhere('new_id', 'like', '%' . $state_code . '%')->value('new_id');
+
+            // $state_nm = DB::table('state_mast')->where('state_code', $state_code)
+            //     ->value('state_nm');
+
+            $state_id =$request->state_id;
+            $state_dtl = DB::table('state_mast')->where('state_id', $state_id)->select('state_nm','state_code','state_id')->first();
+            $state_nm = $state_dtl->state_nm; 
+            $state_code = $state_dtl->state_code; 
+
             $max_new_id = wbApplicant::orderBy('new_id','DESC')->orWhere('new_id', 'like', '%' . $state_code . '%')->value('new_id');
-
-            $state_nm = DB::table('state_mast')->where('state_code', $state_code)->value('state_nm');
+        
+            // dd( $state_id, $state_nm,$state_code);
             
             if($max_new_id =='')
             {
@@ -148,26 +161,27 @@ class AdminMemberController extends Controller
             $mem->mem_id=$mem_id;
             $mem->memo_no=$memo_no;
             $mem->new_id=$new_id;
+            $mem->state_id=$state_id;
             $mem->state_nm=$state_nm;
             $mem->state_code=$state_code;
-            $mem->mem_nm=$request->mem_nm;
-            $mem->media_nm=$request->media_nm;
+            $mem->mem_nm=Str::upper($request->mem_nm);
+            $mem->media_nm=Str::upper($request->media_nm);
             $mem->entry_dt=$request->entry_dt;
             $mem->contact_no=$request->contact_no;
             $mem->mem_email=$request->mem_email;
             $mem->guard_relatiion=$request->guard_relatiion;
-            $mem->guard_nm=$request->guard_nm;
+            $mem->guard_nm=Str::upper($request->guard_nm);
             $mem->gender=$request->gender;
-            $mem->mem_cast=$request->mem_cast;
+            $mem->mem_cast=Str::upper($request->mem_cast);
             $mem->birth_dt=$request->birth_dt;
-            $mem->mem_quali=$request->mem_quali;
-            $mem->mem_add=$request->mem_add;
+            $mem->mem_quali=Str::upper($request->mem_quali);
+            $mem->mem_add=Str::upper($request->mem_add);
             $mem->mem_aadhar_no=$request->mem_aadhar_no;
-            $mem->mem_pan_no=$request->mem_pan_no;
-            $mem->mem_voterid_no=$request->mem_voterid_no;
+            $mem->mem_pan_no=Str::upper($request->mem_pan_no);
+            $mem->mem_voterid_no=Str::upper($request->mem_voterid_no);
             $mem->bank_acount_no=$request->bank_acount_no;
-            $mem->mem_bank_nm=$request->mem_bank_nm;
-            $mem->bnk_ifsc_code=$request->bnk_ifsc_code;
+            $mem->mem_bank_nm=Str::upper($request->mem_bank_nm);
+            $mem->bnk_ifsc_code=Str::upper($request->bnk_ifsc_code);
             $mem->des_type=$request->des_type;
             $mem->mem_desig=$request->mem_desig;
             $mem->district=$request->district;
@@ -215,7 +229,7 @@ class AdminMemberController extends Controller
             $place_of_post = DB::table('block_mast')->where('district_nm',$mem_dist)
                 ->orderBy('block_nm')
                 ->get();
-            
+           
             return $place_of_post;
         }
     }
@@ -861,7 +875,7 @@ class AdminMemberController extends Controller
     $mem->des_type=$mem_expo->des_type;
     $mem->sl_no=$mem_expo->sl_no;
     $mem->mem_posting_place=$mem_expo->mem_posting_place;
-    $mem->mem_posting_place=$mem_expo->mem_posting_place;
+    // $mem->mem_posting_place=$mem_expo->mem_posting_place;
     $mem->save();
 
     // dd( $mem_expo_entry);

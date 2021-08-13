@@ -206,11 +206,12 @@ $curtimestamp = time();
       height: calc(4em + 2px);
       padding: 6px;
       font-size: 16px;
-      border: 1px solid #bababa;
+      border: 0px solid #bababa;
       transition: all 0.2s ease-out;
       border-radius: 6px;
       resize: none;
       outline: none;
+      font-size: 12px;
       }
       .register_textarea:hover {
       border: 1px solid #bababa;

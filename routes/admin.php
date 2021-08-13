@@ -163,6 +163,8 @@ Route::post('/ad-block-save',[AdminMasterEntryController::class,'blockAdd'])->na
 Route::get('ad-block-edit/{id}',[AdminMasterEntryController::class,'blockEdit'])->name('block.edit');
 Route::post('/ad-block-up',[AdminMasterEntryController::class,'blockUp'])->name('block.up');
 Route::get('/delete-block/{id}',[AdminMasterEntryController::class,'blockDelete'])->name('block.del');
+Route::post('/find-district-name',[AdminMasterEntryController::class ,'findDisName']);
+Route::post('/search-district-name',[AdminMasterEntryController::class ,'searDisName']);
 
 
 // Add Staff

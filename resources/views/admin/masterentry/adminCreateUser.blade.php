@@ -17,6 +17,7 @@
                                     {{ session('msg') }}
                                 </div>
                             @endif
+                            <div style="text-align: center;color:gray;font-size:15px;margin-top:-15px"><b><u>CREATE USER</u></b></div>
                             <form method="POST" action="{{ url('ad-cuser') }}"  enctype="multipart/form-data">
                                 @csrf 
                                     <div class="col-sm-12" >
@@ -59,7 +60,7 @@
                                             @endif
                                     </div>
                                     <div class="col-sm-12" style="margin-top: 5px">
-                                        <input type="text" id="user_id" class="register_input" name="user_id"   autocomplete="off"/>
+                                        <input type="text" id="user_id" class="register_input" name="user_id" required  autocomplete="off"/>
                                         <label for="register_input" placeholder="Enter User Id "></label>
                                         @if ($errors->has('user_id'))
                                             <div class="text-danger">
@@ -68,7 +69,7 @@
                                         @endif
                                     </div>
                                     <div class="col-sm-12" >
-                                        <input type="email" id="email" class="register_input" name="email"  autocomplete="off"/>
+                                        <input type="email" id="email" class="register_input" name="email"  required autocomplete="off"/>
                                         <label for="register_input" placeholder="Enter e@mail"></label>
                                         @if ($errors->has('email'))
                                             <div class="text-danger">
@@ -78,7 +79,7 @@
                                     </div>
                                 
                                     <div class="col-sm-12" >
-                                        <input type="password" id="password" class="register_input" name="password"  autocomplete="off"/>
+                                        <input type="password" id="password" class="register_input" name="password" required autocomplete="off"/>
                                         <label for="register_input" placeholder="Enter Password"></label>
                                         @if ($errors->has('password'))
                                             <div class="text-danger">

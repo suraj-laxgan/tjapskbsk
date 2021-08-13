@@ -23,12 +23,18 @@
                     <div class="card-body"style='border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);'>
                         {{-- <div class="" id="mem_dist_show" > --}}
                             <div class="col-sm-12" >
-                                    <select name="state_nm" id="state_n" class="form-controls"         onChange="findStateName()">
+                                    <select name="state_id" id="state_id" class="form-controls">
+                                        <option value="">Select State</option>
+                                        @foreach($state_name as $sname)
+                                            <option value="{{$sname->state_id}}">{{$sname->state_nm}}</option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <select name="state_nm" id="state_n" class="form-controls"         onChange="findStateName()">
                                         <option value="">Select State</option>
                                         @foreach($state_name as $sname)
                                             <option value="{{$sname->state_code}}">{{$sname->state_nm}}</option>
                                         @endforeach
-                                    </select>
+                                    </select> --}}
                                     @if ($errors->has('state_nm'))
                                     <div class="text-danger">
                                         {{ $errors->first('state_nm') }}

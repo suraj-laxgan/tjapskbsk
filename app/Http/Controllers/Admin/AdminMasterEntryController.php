@@ -346,57 +346,119 @@ class AdminMasterEntryController extends Controller
     {
         $district_nm = request('district_nm');
         $block_nm = request('block_nm');
-        // dd($district_nm);
-        $state = DB::table('state_mast')->select('state_nm','state_code','state_id')
-        ->get();
-        // dd( $state);
+        $state_id = request('state_id');
+        // dd($state_id,$district_nm, $block_nm);
 
         $query = DB::table('block_mast')
         ->orderBy('block_nm', 'asc');
         // ->get();
         if($district_nm != '')
         {
-            $block = $query->where('district_nm', 'like', '%' . $district_nm . '%');
+            $query = $query->where('district_nm', 'like', '%' . $district_nm . '%');
         }
         // dd($district_nm);
 
         if($block_nm != '')
         {
-            $block = $query->where('block_nm', 'like', '%' . $block_nm . '%');
+            $query = $query->where('block_nm', 'like', '%' . $block_nm . '%');
         }
-
+        if($state_id != '')
+        {
+            $query = $query->where('state_id', $state_id );
+        }
         $block =  $query->paginate(50);
         // dd($block[0]->block_nm);
 
-        $dist = DB::table('district_mast')->get();
-
-        return view ('admin.masterentry.adminBlock',compact('block','dist','state'));
+        $state = DB::table('state_mast')->select('state_nm','state_code','state_id')
+        ->get();
+        // dd( $state);
+        // $dist = DB::table('district_mast')->get();
+        return view ('admin.masterentry.adminBlock',compact('block','state'));
     }
+   
+    public function findDisName(Request $r)
+    {
+        if($r->ajax())
+        {
+            $state_id_1 = $r->state_id_1;
+            $district_nm_1 = DB::table('district_mast')->where('state_id',$state_id_1)
+                ->orderBy('district_nm')
+                ->get();
+            // dd(  $district_nm_1);
+            return $district_nm_1;
+        }
+    }
+
+    public function searDisName(Request $r)
+    {
+        if($r->ajax())
+        {
+            $state_id_22 = $r->state_id_22;
+            // dd($state_id_22);
+            $district_nm_22 = DB::table('district_mast')->where('state_id',$state_id_22)
+                ->orderBy('district_nm')
+                ->get();
+            // dd($district_nm_22);
+            return $district_nm_22;
+        }
+    }
+
 
     public function blockAdd(Request $request)
     {
-        $max_block_id = DB::table('block_mast')->orderBy('block_id', 'desc')->value('block_id');
-        // dd($max_block_id );
-
-        if($max_block_id=="")
-        {
-            $block_id = "BL0001";
-        }
-        else{
-  
-            $lastp = substr($max_block_id,2,4);
-            $lastpp = ++$lastp;
-            $last = str_pad($lastpp,4,"0",STR_PAD_LEFT);
-            $block_id = 'BL'.$last;
-        }
-        // dd($block_id );
-        $user = block::create([
-            'block_id'=>$block_id,
-            'block_nm' => $request->block_nm,
-            'district_nm' => $request->district_nm,
+        $request->validate([
+            'state_id' => 'required',
+            'district_nm' => 'required',
+            'block_nm' => 'required'
+        ],
+        [
+            'state_id.required' => 'State name is required',
+            'district_nm.required' => 'District name is required ',
+            'block_nm.required' => 'Block name is required'
         ]);
 
-        return redirect()->route('add.Block')->with('msg','Block has been created successfully'); 
+        $check_block_cnt =  DB::table('block_mast')
+        ->where('state_id', $request->state_id)
+        ->where('district_nm', $request->district_nm)
+        ->where('block_nm', $request->block_nm)
+        ->count();
+        // dd( $check_block_cnt );
+
+        if( $check_block_cnt < 1 ){
+            $max_block_id = DB::table('block_mast')->orderBy('block_id', 'desc')->value('block_id');
+            // dd($max_block_id );
+
+            if($max_block_id=="")
+            {
+                $block_id = "BL0001";
+            }
+            else{
+    
+                $lastp = substr($max_block_id,2,4);
+                $lastpp = ++$lastp;
+                $last = str_pad($lastpp,4,"0",STR_PAD_LEFT);
+                $block_id = 'BL'.$last;
+            }
+            // dd($block_id );
+            $state_id =request('state_id');
+            $dist = DB::table('district_mast')->where('state_id', $state_id)->select('state_nm','state_code')->first();
+            // dd($dist->state_nm);
+
+            $user = block::insert([
+                'block_id'=>$block_id,
+                'block_nm' =>Str::upper($request->block_nm),
+                'district_nm' => $request->district_nm,
+                'state_id' => $state_id,
+                'state_nm' =>  $dist->state_nm,
+                'state_code' => $dist->state_code
+            ]);
+
+            return redirect()->route('add.Block')->with('msg','Block has been created successfully'); 
+        }
+        else{
+            return redirect()->route('add.Block')->with('msg','Block name already exists'); 
+
+        }   
     }
 
     public function blockEdit($id)
@@ -412,17 +474,27 @@ class AdminMasterEntryController extends Controller
 
     public function blockUp(Request $request)
     {
-        $block_id = $request->block_id;
-        // dd($block_id);
-        $block_edit_up = block::where('block_id', $block_id )
-            // ->first();
-            // dd($block_edit_up);
-            ->update([
-                'block_id' =>  $block_id,
-                'block_nm' => $request->block_nm,
-                'district_nm' => $request->district_nm,
-            ]);
-            return redirect()->route('add.Block')->with('msg','Block has been updated successfully');
+        $check_block_cnt =  DB::table('block_mast')
+        ->where('block_nm', $request->block_nm)
+        ->count();
+        // dd( $check_block_cnt );
+
+        if( $check_block_cnt < 1 ){
+            $block_id = $request->block_id;
+            // dd($block_id);
+            $block_edit_up = block::where('block_id', $block_id )
+                // ->first();
+                // dd($block_edit_up);
+                ->update([
+                    'block_id' =>  $block_id,
+                    'block_nm' => $request->block_nm,
+                    // 'district_nm' => $request->district_nm,
+                ]);
+                return redirect()->route('add.Block')->with('msg','Block has been updated successfully');
+        }
+        else{
+            return redirect()->route('add.Block')->with('msg','Block name already exists');
+        }        
     }
 
     public function blockDelete($id)
@@ -495,21 +567,23 @@ class AdminMasterEntryController extends Controller
 
         if($max_staff_id=="")
         {
-            $staff_id = "ST00000001";
+            $staff_id = "SF00000001";
         }
         else{
   
             $lastp = substr($max_staff_id,2,8);
             $lastpp = ++$lastp;
             $last = str_pad($lastpp,8,"0",STR_PAD_LEFT);
-            $staff_id = 'ST'.$last;
+            $staff_id = 'SF'.$last;
         }
         // dd($staff_id );
-        $query = staff::create([
+        // $sf = $request->m_nm;
+        // dd($sf);
+        $query = staff::insert([
             'staff_id'=>$staff_id,
-            'f_nm' => $request->f_nm,
-            'm_nm' => $request->m_nm,
-            'l_nm' => $request->l_nm,
+            'f_nm' => Str::upper($request->f_nm) ,
+            'm_nm' => Str::upper($request->m_nm) ,
+            'l_nm' => Str::upper($request->l_nm),
             'staff_e_mail' => $request->staff_e_mail,
             'staff_mob_1' => $request->staff_mob_1,
             'staff_land_no' => $request->staff_land_no,

@@ -9,9 +9,11 @@
     <div class="container-fluid">
         @include('admin.header.adminMasterEntryHeader')
         <div class="col-md-12">
+            
             <form method="POST" action="{{ url('/ad-staff-save') }}"  enctype="multipart/form-data">
                 @csrf 
                 <div class="row">
+                   
                     <div class="card-body" style="border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);">
                         <div class="col-sm-12" >
                             <input type="text" id="f_nm" class="register_input" name="f_nm"  required/>

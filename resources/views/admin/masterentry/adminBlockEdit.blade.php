@@ -15,12 +15,12 @@
                     <div class="col-sm-12" >
                         <input type="hidden" value="{{ $block_edit->block_id  }}" name ='block_id'>
                         {{-- <label>District Name :</label>&nbsp;<font color="#FF0000">*</font> --}}
-                            <select name="district_nm" id="district_nm" class="form-controls" required>
+                            {{-- <select name="district_nm" id="district_nm" class="form-controls" required>
                                 <option value="">Select District Name</option>
                                     @foreach($distric as $dis)
                                     <option value="{{$dis->district_nm}}" {{ ($block_edit->district_nm == $dis->district_nm)? 'selected':'' }}>{{$dis->district_nm}}</option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                     </div>
                     <div class="col-sm-12" style="margin-top: 5px">
                         <input type="text" id="block_nm" class="register_input" name="block_nm" value="{{ $block_edit->block_nm }}"/>

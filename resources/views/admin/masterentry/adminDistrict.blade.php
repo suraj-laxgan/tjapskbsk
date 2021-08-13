@@ -13,9 +13,10 @@
            
             <div class="row">
                 <div class="card-body" style="border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);  margin-bottom: 30px;">
-                {{-- <div style="color:gray"><b>Search Existing District :</b></div> --}}
+                    {{-- <div style="color:gray;font-size:12px;margin-top:-20px"><b><u>Search District :</u></b></div> --}}
+                
                     {{-- <form method="GET" action="{{ url('#') }}"  enctype="multipart/form-data"> --}}
-                        <div class="row"style='margin-top:10px'>
+                        <div class="row"style='margin-top:2px'>
                             <div class="col-sm-4" >
                                 <select name="state_nm" id="state_nm" class="form-controls" required>
                                     <option value="">Select State</option>
@@ -42,9 +43,10 @@
                     {{-- </form> --}}
                 </div>&nbsp;
                 <div class="card-body"style="border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);  margin-bottom: 30px;">
+                    {{-- <div style="color:gray;font-size:12px;margin-top:-20px"><b><u>Add District :</u></b></div> --}}
                     <form method="POST" action="{{ url('/ad-districts-save') }}"  enctype="multipart/form-data">
                         @csrf 
-                        <div class="row">
+                        <div class="row" style='margin-top:2px'>
                             <div class="col-sm-4" >
                                 <select name="state_id" id="state_n" class="form-controls" >
                                     <option value="">Select State</option>
