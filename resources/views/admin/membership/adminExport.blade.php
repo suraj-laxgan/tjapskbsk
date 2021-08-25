@@ -112,7 +112,7 @@
                                              "><button>Export</button></a> --}}
                                              <form action="{{ url('ad-expo-member-update')}}" method ="POST"  enctype="multipart/form-data"}}
                                              ">
-                                             <input type="hidden" id="mem_id" class="register_input" name="mem_id" value= "{{ $mem_export->mem_id }}" readonly />
+                                             <input type="text" id="mem_id" class="register_input" name="mem_id" value= "{{ $mem_export->mem_id }}" readonly />
                                              <button type='submit' class='button22' id="search">Export</button>
                                              </form>
                                          </td>

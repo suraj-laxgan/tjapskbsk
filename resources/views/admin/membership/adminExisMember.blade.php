@@ -17,11 +17,7 @@
                     <td width="0%">&nbsp;</td>
                     <td width="100%">
                         <div class="card-body">
-                            @if (session('msg'))
-                                <div class="alert alert-danger">
-                                    {{ session('msg') }}
-                                </div>
-                            @endif
+                           
                             <form method="GET" action="{{ url('/ad-exismember') }}"  enctype="multipart/form-data">
                                
                                 <div class="row">
@@ -119,6 +115,11 @@
                             <!-- <div style="color:gray;margin-top:10px"> <b>View Existing Member :</b></div> -->
                             <div>&nbsp;</div>	
                             <table width=100% id="customers">
+                                @if (session('msg'))
+                                <div class="alert alert-danger">
+                                    {{ session('msg') }}
+                                </div>
+                                @endif
                                 <tr >
                                     <th width=5%>Id</th>
                                     <th width=5%>Memo No</th>

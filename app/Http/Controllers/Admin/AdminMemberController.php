@@ -69,12 +69,13 @@ class AdminMemberController extends Controller
     //   $max_memo_no = DB::table('memo_no_max')->get();
     //   dd( $max_memo_no);
 
-   
+    $state_id =$request->state_id;
+    // dd($state_id);
     
-        $check_post = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('des_no_post');
-
-        $check_fcpm = $this->check_fcpm($request);
+        $check_post = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->where('state_id', $request->state_id)->value('des_no_post');
         
+        $check_fcpm = $this->check_fcpm($request);
+        // dd($check_fcpm);
         // dd($check_post,$check_fcpm);
         if($check_post > $check_fcpm){
             $sl_nos = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
@@ -136,8 +137,10 @@ class AdminMemberController extends Controller
 
             
             $upload = $request->file('profile_pic');
-            $filename = $mem_id. '.' . $upload->getClientOriginalExtension();
-            $upload->move(public_path('mem_regis_upload'), $filename);
+            $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->getClientOriginalExtension();
+            // $filename = $mem_id. '.' . $upload->getClientOriginalExtension();
+            // $upload->move(public_path('mem_regis_upload'), $filename);
+            $upload->move(public_path('photo'), $filename);
 
             //head office,distric ofice,
             if($request->des_type=='HEAD OFFICE')
@@ -156,7 +159,7 @@ class AdminMemberController extends Controller
             {
                 $mem_posting_place='';
             }
-
+           
             $mem= new wbApplicant;
             $mem->mem_id=$mem_id;
             $mem->memo_no=$memo_no;
@@ -184,7 +187,7 @@ class AdminMemberController extends Controller
             $mem->bnk_ifsc_code=Str::upper($request->bnk_ifsc_code);
             $mem->des_type=$request->des_type;
             $mem->mem_desig=$request->mem_desig;
-            $mem->district=$request->district;
+            $mem->district=$request->district_nm;
             $mem->mem_posting_place=$mem_posting_place;
             $mem->sl_no=$sl_nos;
             $mem->profile_pic=$filename;
@@ -197,12 +200,16 @@ class AdminMemberController extends Controller
         
     }
     private function check_fcpm($request){
-        $check_fcpm = wbApplicant::where('des_type', $request->des_type)->where('mem_desig', $request->mem_desig);
+        $check_fcpm = wbApplicant::where('des_type', $request->des_type)->where('mem_desig', $request->mem_desig)
+        ->where('state_id', $request->state_id);
         if($request->district != ''){
             $check_fcpm = $check_fcpm->where('district', $request->district);
         }
         if($request->mem_posting_place != ''){
             $check_fcpm = $check_fcpm->where('mem_posting_place', $request->mem_posting_place);
+        }
+        if($request->state_id != ''){
+            $check_fcpm = $check_fcpm->where('state_id', $request->state_id);
         }
         $check_fcpm = $check_fcpm->count();
         return $check_fcpm;
@@ -213,40 +220,73 @@ class AdminMemberController extends Controller
         if($r->ajax())
         {
             $des_type = $r->des_type;
-            $find_des_type = Designation::where('des_type',$des_type)
+            $state_id =  $r->state_id;
+            // dd(  $state_id );
+            $find_des_type = Designation::where('des_type',$des_type)->where('state_id',$state_id)
+                // ->where('state_id',$des_type)
                 ->orderBy('des_nm')
                 ->get();
-            
+                // dd($find_des_type);
             return $find_des_type;
         }
     }
 
-    public function findDisName(Request $r)
+    // public function findDisName(Request $r)
+    // {
+    //     if($r->ajax())
+    //     {
+    //         $mem_dist = $r->mem_dist;
+    //         $place_of_post = DB::table('block_mast')->where('district_nm',$mem_dist)
+    //             ->orderBy('block_nm')
+    //             ->get();
+    //         return $place_of_post;
+    //     }
+    // }
+
+    public function dkName(Request $r)
     {
         if($r->ajax())
         {
-            $mem_dist = $r->mem_dist;
-            $place_of_post = DB::table('block_mast')->where('district_nm',$mem_dist)
+            
+            $state_id =  $r->state_id;
+           
+            $district_nm = DB::table('district_mast')->where('state_id',$state_id)
+                ->orderBy('district_nm')->get();
+                // dd( $dis); 
+            return $district_nm;
+        }
+    }
+
+    public function blockName(Request $r)
+    {
+        if($r->ajax())
+        {
+            $state_id =  $r->state_id;
+            $district_nm = $r->district_nm;
+            // dd($district_nm,  $state_id );
+            $block_nm = DB::table('block_mast')->where('state_id',$state_id)
+                ->where('district_nm',$district_nm)
                 ->orderBy('block_nm')
                 ->get();
-           
-            return $place_of_post;
-        }
+            return $block_nm;
+        } 
     }
     
     public function findStateName(Request $r)
     {
         if($r->ajax())
         {
-            $state_nm = $r->state_nm;
-            $state = DB::table('state_mast')->where('state_nm',$state_nm)
+            $state_nm = $r->state;
+            // dd( $state_nm);
+            $state = DB::table('state_mast')->where('state_id',$state_nm)
                 ->orderBy('state_nm')
                 ->get();
-            
+            // dd($state);
             return $state;
         }
     }
 
+  
     // ************ Existing Member Search ****************
 
     public function adminExisMember()
@@ -264,13 +304,18 @@ class AdminMemberController extends Controller
         $guard_nm = request('guard_nm');
         $post_applied_for = request('post_applied_for');
         
-        // // $new = DB::table('fcpm_mast')->where('mem_stat','A')->where('reg_status','new');
-        $query  = wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
-        ->whereNotNull('memo_no')
+        // $query  = wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
+        //     ->whereNotNull('memo_no')
+        //     ->select('mem_id','memo_no','mem_nm','guard_nm','mem_quali','birth_dt','media_nm','mem_desig','mem_posting_place');
+
+        $query  = wbApplicant::where('mem_stat','A')
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                      ->orWhere('reg_status','')
+                      ->orWhereNull('reg_status');
+            })
+            ->whereNotNull('memo_no')
             ->select('mem_id','memo_no','mem_nm','guard_nm','mem_quali','birth_dt','media_nm','mem_desig','mem_posting_place');
-        // dd( $query);
-                        // $query = $query->where('reg_status',['new']);
-        $all_memid = '';
   
             if($mem_id != '')
             {
@@ -344,7 +389,7 @@ class AdminMemberController extends Controller
                 'post_applied_for' =>$post_applied_for
             ]);
            
-            $mem_dist = DB::table('district_mast')->orderBy('district_nm')->get();
+            $mem_dist = DB::table('district_mast')->orderBy('state_id')->get();
 
             $block_name = DB::table('block_mast')->orderBy('block_nm')->get();
 
@@ -378,7 +423,7 @@ class AdminMemberController extends Controller
         }
         // $id = request('mem_id');
         $mem_view = DB::table('fcpm_mast')->where('mem_id', $id_a)
-            ->select('mem_id','mem_nm','guard_nm','profile_pic','mem_posting_place','mem_desig','entry_dt','memo_no')
+            ->select('mem_id','mem_nm','guard_nm','profile_pic','mem_posting_place','mem_desig','entry_dt','memo_no','state_nm')
             ->first();
         // dd( $mem_view);
         return view('admin.membership.adminExisMemSmallView',compact('mem_view'));
@@ -404,28 +449,53 @@ class AdminMemberController extends Controller
 
         // $id = request('mem_id');
         $mem_dist = DB::table('district_mast')
-        ->orderBy('district_nm')
+        ->orderBy('state_id')
         ->get();
 
         $state_name = DB::table('state_mast')
         // ->where('state_code','!=','')
-            ->select('state_nm','state_code')
+            ->select('state_nm','state_code','state_id')
             ->orderBy('state_nm','DESC')
             ->get();
 
         // dd( $mem_dist);
         $mem_edit = DB::table('fcpm_mast')->where('mem_id', $id_a)
-            ->select('state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district')
+            ->select('state_code','state_id','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district')
             ->first();
             // $mem_id=request('mem_id');
             // dd( $mem_id);
         // dd( $mem_edit);
-        return view('admin.membership.adminExisMemEdit',compact('mem_edit','mem_dist','state_name'));
+        $district_nm = DB::table('district_mast')->where('state_id',$mem_edit->state_id)
+                ->orderBy('district_nm')->get();
+        return view('admin.membership.adminExisMemEdit',compact('mem_edit','mem_dist','state_name','district_nm'));
     }
 
     public function adminMemUpload(Request $request)
     {
         $mem_id = $request->mem_id;
+        // dd($mem_id);
+
+    //     $validated = $request->validate([
+    //         'mem_nm' => 'required',
+    //         'media_nm' => 'required',
+    //         'entry_dt' => 'required',
+    //         'contact_no' => 'required | integer',
+    //         'mem_email' => 'required|string|email|max:255|unique:fcpm_mast',
+    //     ],
+    //     [
+    //         'mem_nm.required' => 'Member Name is required ',
+    //         'media_nm.required' => 'Media Name is requirfd',
+    //         'entry_dt.required' => 'Entry Date is required',
+    //         'contact_no.required' => 'Contact No is required',
+    //         'mem_email.required' => 'Email is required'
+    //   ]);
+
+    //   $check_post = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('des_no_post');
+
+    //   $check_fcpm = $this->check_fcpm($request);
+      
+    //   // dd($check_post,$check_fcpm);
+    //   if($check_post > $check_fcpm){
 
         $sl_nos = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
 
@@ -436,13 +506,17 @@ class AdminMemberController extends Controller
             unlink(public_path('mem_regis_upload/'.$pic->profile_pic));
             $upload = $request->file('profile_pic');
             $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
-            $upload->move(public_path('mem_regis_upload'), $filename);
+            // $upload->move(public_path('mem_regis_upload'), $filename);
+            $upload->move(public_path('photo'), $filename);
+
             }
             elseif($request->file('profile_pic') != "")
             {
                 $upload = $request->file('profile_pic');
                 $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
-                $upload->move(public_path('mem_regis_upload'), $filename);
+                // $upload->move(public_path('mem_regis_upload'), $filename);
+                $upload->move(public_path('photo'), $filename);
+
             }
             
             elseif($request->file('profile_pic') == "")
@@ -457,24 +531,24 @@ class AdminMemberController extends Controller
             ->select('mem_id','memo_no','new_id','state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','sl_no')
             ->first()->update([ 
             'mem_id' => $request->mem_id,
-            'mem_nm' => $request->mem_nm,
-            'media_nm' => $request->media_nm,
+            'mem_nm' =>Str::upper($request->mem_nm),
+            'media_nm' => Str::upper($request->media_nm),
             'entry_dt' => $request->entry_dt,
             'contact_no' => $request->contact_no,
             'mem_email' => $request->mem_email,
             'guard_relatiion' => $request->guard_relatiion,
-            'guard_nm' => $request->guard_nm,
+            'guard_nm' =>Str::upper($request->guard_nm),
             'gender' => $request->gender,
-            'mem_cast' => $request->mem_cast,
+            'mem_cast' => Str::upper($request->mem_cast),
             'birth_dt' => $request->birth_dt,
-            'mem_quali' => $request->mem_quali,
-            'mem_add' => $request->mem_add,
+            'mem_quali' => Str::upper($request->mem_quali),
+            'mem_add' => Str::upper($request->mem_add),
             'mem_aadhar_no' => $request->mem_aadhar_no,
-            'mem_pan_no' => $request->mem_pan_no,
-            'mem_voterid_no' => $request->mem_voterid_no,
+            'mem_pan_no' => Str::upper($request->mem_pan_no),
+            'mem_voterid_no' => Str::upper($request->mem_voterid_no),
             'bank_acount_no' => $request->bank_acount_no,
-            'mem_bank_nm' => $request->mem_bank_nm,
-            'bnk_ifsc_code' => $request->bnk_ifsc_code,
+            'mem_bank_nm' =>  Str::upper($request->mem_bank_nm),
+            'bnk_ifsc_code' => Str::upper($request->bnk_ifsc_code),
             'des_type' => $request->des_type,
             'mem_desig' => $request->mem_desig,
             'district' => $request->district,
@@ -484,6 +558,10 @@ class AdminMemberController extends Controller
         ]);
     //    dd( $editmem);
         return redirect()->route('ad.adminexmember')->with('msg','Member has been updated  successfully');
+        // }
+        // else{
+        //     return redirect()->route('ad.adminexmember')->with('msg','MemberExists');
+        // }
     }
 
     public function memExcel()
@@ -568,11 +646,19 @@ class AdminMemberController extends Controller
         $memo_no = request('memo_no');
     //    dd($memo_no);
 
-        $query =  wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
-        ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm');
+        // $query =  wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
+        // ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm');
         // dd( $query);
+
+        $query  = wbApplicant::where('mem_stat','A')
+        ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                  ->orWhere('reg_status','')
+                  ->orWhereNull('reg_status');
+        })
+        ->whereNotNull('memo_no')
+        ->select('mem_id','memo_no','mem_nm','guard_nm','mem_quali','birth_dt','media_nm','mem_desig','mem_posting_place','profile_pic','memo_id');
       
-        $all_memid = '';
   
             if($mem_id != '')
             {
@@ -637,7 +723,7 @@ class AdminMemberController extends Controller
 
         // $id = request('mem_id');
         $mem_details = DB::table('fcpm_mast')->where('mem_id', $id_a )
-            ->select('mem_id','mem_nm','guard_nm','profile_pic','mem_posting_place','mem_desig','entry_dt','memo_no')
+            ->select('mem_id','mem_nm','guard_nm','profile_pic','mem_posting_place','mem_desig','entry_dt','memo_no','state_nm')
             ->first();
         // dd( $mem_details);
         return view('admin.membership.adminMemberQuerySmallView',compact('mem_details'));
@@ -662,9 +748,9 @@ class AdminMemberController extends Controller
         }
 
         // $id = request('mem_id');
-        $mem_dist = DB::table('district_mast')
-        ->orderBy('district_nm')
-        ->get();
+        // $mem_dist = DB::table('district_mast')
+        // ->orderBy('district_nm')
+        // ->get();
 
         $state_name = DB::table('state_mast')
         // ->where('state_code','!=','')
@@ -674,12 +760,16 @@ class AdminMemberController extends Controller
 
         // dd( $mem_dist);
         $mem_edit = DB::table('fcpm_mast')->where('mem_id', $id_a )
-            ->select('state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district')
+            ->select('state_code','state_nm','state_id','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district')
             ->first();
             // $mem_id=request('mem_id');
             // dd( $mem_id);
         // dd( $mem_edit);
-        return view('admin.membership.adminMemberQueryEdit',compact('mem_edit','mem_dist','state_name'));
+
+        $district_nm = DB::table('district_mast')->where('state_id',$mem_edit->state_id)
+        ->orderBy('district_nm')->get();
+
+        return view('admin.membership.adminMemberQueryEdit',compact('mem_edit','state_name','district_nm'));
     }
 
     public function adminMemQueryUpload(Request $request)
@@ -716,24 +806,24 @@ class AdminMemberController extends Controller
             ->select('mem_id','memo_no','new_id','state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','sl_no')
             ->first()->update([ 
             'mem_id' => $request->mem_id,
-            'mem_nm' => $request->mem_nm,
-            'media_nm' => $request->media_nm,
+            'mem_nm' => Str::upper($request->mem_nm),
+            'media_nm' =>Str::upper($request->media_nm),
             'entry_dt' => $request->entry_dt,
             'contact_no' => $request->contact_no,
             'mem_email' => $request->mem_email,
             'guard_relatiion' => $request->guard_relatiion,
-            'guard_nm' => $request->guard_nm,
+            'guard_nm' => Str::upper($request->guard_nm),
             'gender' => $request->gender,
-            'mem_cast' => $request->mem_cast,
+            'mem_cast' => Str::upper($request->mem_cast),
             'birth_dt' => $request->birth_dt,
-            'mem_quali' => $request->mem_quali,
-            'mem_add' => $request->mem_add,
+            'mem_quali' => Str::upper($request->mem_quali),
+            'mem_add' =>Str::upper($request->mem_add),
             'mem_aadhar_no' => $request->mem_aadhar_no,
-            'mem_pan_no' => $request->mem_pan_no,
-            'mem_voterid_no' => $request->mem_voterid_no,
+            'mem_pan_no' => Str::upper($request->mem_pan_no),
+            'mem_voterid_no' => Str::upper($request->mem_voterid_no),
             'bank_acount_no' => $request->bank_acount_no,
-            'mem_bank_nm' => $request->mem_bank_nm,
-            'bnk_ifsc_code' => $request->bnk_ifsc_code,
+            'mem_bank_nm' => Str::upper($request->mem_bank_nm),
+            'bnk_ifsc_code' =>Str::upper($request->bnk_ifsc_code),
             'des_type' => $request->des_type,
             'mem_desig' => $request->mem_desig,
             'district' => $request->district,
@@ -756,12 +846,21 @@ class AdminMemberController extends Controller
         $media_nm = request('media_nm');
 
         // $des_type = request('des_type');
-      
-        $query =  wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
+
+        $query  = wbApplicant::where('mem_stat','A')
+        ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                  ->orWhere('reg_status','')
+                  ->orWhereNull('reg_status');
+        })
+        ->whereNotNull('memo_no')
         ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm','guard_nm','mem_quali','export_stat');
+
+        // $query =  wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
+        // ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm','guard_nm','mem_quali','export_stat');
         // dd( $query);
       
-        $all_memid = '';
+        // $all_memid = '';
   
             if($mem_id != '')
             {
@@ -820,6 +919,7 @@ class AdminMemberController extends Controller
     public function memExport(Request $request, $id)
     {
         // dd(strlen($id));
+        // dd($id);
         if (strlen($id) == 1) {
             $id_a = '0000'.$id;
         }
@@ -835,51 +935,59 @@ class AdminMemberController extends Controller
         elseif (strlen($id) == 5) {
             $id_a = $id;
         }
-        $mem_expo = wbApplicant::where('mem_stat','A')
-            ->where('reg_status','!=','new')
-            ->where('mem_id', $id_a)
-            ->select('mem_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id')
+        // $mem_expo = wbApplicant::where('mem_stat','A')
+        //     ->where('reg_status','!=','new')
+        //     ->where('mem_id', $id_a)
+
+            $mem_expo  = wbApplicant::where('mem_stat','A')->where('mem_id', $id_a)
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                      ->orWhere('reg_status','')
+                      ->orWhereNull('reg_status');
+            })
+            ->whereNotNull('memo_no')
+            ->select('mem_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','state_id',)
             ->first();
-        // dd($mem_expo->mem_id);
+        // dd($mem_expo->mem_posting_place);
         wbApplicant::where('mem_id', $id_a)
             ->update([
                 'export_stat' => 'Y'
             ]);
-        
-            
      
-    //   $mem_expo_entry = webUser::orderBy('mem_id','DESC');
-    //   ->first();
-    $mem= new webUser;
-    $mem->mem_id=$id_a;
-    $mem->mem_id_old=$mem_expo->mem_id_old;
-    $mem->mem_nm=$mem_expo->mem_nm;
-    $mem->mem_add=$mem_expo->mem_add;
-    $mem->district=$mem_expo->district;
-    $mem->guard_relatiion=$mem_expo->guard_relatiion;
-    $mem->guard_nm=$mem_expo->guard_nm;
-    $mem->mem_quali=$mem_expo->mem_quali;
-    $mem->contact_no=$mem_expo->contact_no;
-    $mem->mem_email=$mem_expo->mem_email;
-    $mem->birth_dt=$mem_expo->birth_dt;
-    $mem->mem_cast=$mem_expo->mem_cast;
-    $mem->gender=$mem_expo->gender;
-    $mem->media_nm=$mem_expo->media_nm;
-    $mem->memo_no=$mem_expo->memo_no;
-    $mem->memo_no_old=$mem_expo->memo_no_old;
-    $mem->entry_dt=$mem_expo->entry_dt;
-    $mem->mem_desig=$mem_expo->mem_desig;
-    $mem->mem_posting_place=$mem_expo->mem_posting_place;
-    $mem->profile_pic=$mem_expo->profile_pic;
-    $mem->mem_stat=$mem_expo->mem_stat;
-    $mem->des_type=$mem_expo->des_type;
-    $mem->sl_no=$mem_expo->sl_no;
-    $mem->mem_posting_place=$mem_expo->mem_posting_place;
-    // $mem->mem_posting_place=$mem_expo->mem_posting_place;
-    $mem->save();
+        //   $mem_expo_entry = webUser::orderBy('mem_id','DESC');
+        //   ->first();
+        $mem= new webUser;
+        $mem->mem_id=$id_a;
+        $mem->new_id=$mem_expo->new_id;
+        $mem->state_id=$mem_expo->state_id;
+        $mem->state_code=$mem_expo->state_code;
+        $mem->state_nm=$mem_expo->state_nm;
+        $mem->mem_id_old=$mem_expo->mem_id_old;
+        $mem->mem_nm=$mem_expo->mem_nm;
+        $mem->mem_add=$mem_expo->mem_add;
+        $mem->district=$mem_expo->district;
+        $mem->guard_relatiion=$mem_expo->guard_relatiion;
+        $mem->guard_nm=$mem_expo->guard_nm;
+        $mem->mem_quali=$mem_expo->mem_quali;
+        $mem->contact_no=$mem_expo->contact_no;
+        $mem->mem_email=$mem_expo->mem_email;
+        $mem->birth_dt=$mem_expo->birth_dt;
+        $mem->mem_cast=$mem_expo->mem_cast;
+        $mem->gender=$mem_expo->gender;
+        $mem->media_nm=$mem_expo->media_nm;
+        $mem->memo_no=$mem_expo->memo_no;
+        $mem->memo_no_old=$mem_expo->memo_no_old;
+        $mem->entry_dt=$mem_expo->entry_dt;
+        $mem->mem_desig=$mem_expo->mem_desig;
+        $mem->mem_posting_place=$mem_expo->mem_posting_place;
+        $mem->profile_pic=$mem_expo->profile_pic;
+        $mem->mem_stat=$mem_expo->mem_stat;
+        $mem->des_type=$mem_expo->des_type;
+        $mem->sl_no=$mem_expo->sl_no;
+        $mem->mem_posting_place=$mem_expo->mem_posting_place;
+        $mem->save();
 
-    // dd( $mem_expo_entry);
-      return redirect()->route('ad.adminExpoMeM')->with('msg','Member has been exported successfully');
+        return redirect()->route('ad.adminExpoMeM')->with('msg','Member has been exported successfully');
     }
 
     public function adminConfiLetter()
@@ -947,13 +1055,21 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
         
-        $ma_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id)
-        ->where('mem_id', $id_a)
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id')
-        ->first();
-        // dd($ma_print->memo_no);
+        // $ma_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id)
+        // ->where('mem_id', $id_a)
+
+        $ma_print  = wbApplicant::where('mem_stat','A')->where('mem_id', $id_a)
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                      ->orWhere('reg_status','')
+                      ->orWhereNull('reg_status');
+            })
+            ->whereNotNull('memo_no')
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id')
+            ->first();
+        // dd($ma_print->state_code);
 
        
         $max_memo_id = wbApplicant::orderBy('memo_id','desc')->value('memo_id');
@@ -984,7 +1100,7 @@ class AdminMemberController extends Controller
     {
         $memo_id =request('memo_id');
         $print_dt = request('print_dt');
-        // dd( $print_dt);
+        // dd( $memo_id);
 
         if (strlen($id) == 1) {
             $id_a = '0000'.$id;
@@ -1001,15 +1117,23 @@ class AdminMemberController extends Controller
         elseif (strlen($id) == 5) {
             $id_a = $id;
         }
+        // $ma_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // ->where('mem_id', $id_a)
 
-        $ma_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        ->where('mem_id', $id_a)
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no')
-        ->first();
+        $ma_print  = wbApplicant::where('mem_stat','A')->where('mem_id', $id_a)
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                      ->orWhere('reg_status','')
+                      ->orWhereNull('reg_status');
+            })
+            ->whereNotNull('memo_no')
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no')
+            ->first();
 
-        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$ma_print->memo_id)
         ->value('print_dt');
+        // dd($ma_print, $print_letter_dtl);
         // dd($print_letter_dtl);
         // dd($ma_print->memo_no);
         // return view('admin.membership.adminConfiLetterPrint',compact('ma_print'));
@@ -1022,7 +1146,7 @@ class AdminMemberController extends Controller
     {
         $memo_id =request('memo_id');
         $print_dt = request('print_dt');
-        dd( $print_dt);
+        // dd( $print_dt);
 
         if (strlen($id) == 1) {
             $id_a = '0000'.$id;
@@ -1048,9 +1172,18 @@ class AdminMemberController extends Controller
         // $table->macAddress('device');
         // $table->ipAddress('visitor');
         // dd( $ipAddress);
-        $ma_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        ->where('mem_id', $id_a)
+
+        // $ma_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // ->where('mem_id', $id_a)
+
+        $ma_print  = wbApplicant::where('mem_stat','A')->where('mem_id', $id_a)
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                      ->orWhere('reg_status','')
+                      ->orWhereNull('reg_status');
+            })
+            ->whereNotNull('memo_no')
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id',)
         ->first();
         $max_print_id = DB::table('print_letter_mast')->orderBy('print_id','desc')->value('print_id');
@@ -1066,7 +1199,7 @@ class AdminMemberController extends Controller
             $print_id = 'PRT'.$last;
         }
 // dd($print_id);
-
+       
         $print = new printConLetter;
        
         $print->print_id = $print_id;
@@ -1078,14 +1211,16 @@ class AdminMemberController extends Controller
         $print->print_time = date('H:i:s');
         // dd($print);
         $success =   $print -> save();
-
-       $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
+        
+       $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$ma_print->memo_id)
         ->value('print_dt');
+        // dd($print_letter_dtl);
         // $ma_print->appends([
         //         // 'mem_id' => $mem_id,
         //         'memo_id' => $memo_id,
         //         'print_dt' => $print_dt
         //     ]);
+        // dd($print_letter_dtl );
           
         return view('admin.membership.adminConLetPriCom',compact('ma_print','print_letter_dtl'));
 
@@ -1139,9 +1274,19 @@ class AdminMemberController extends Controller
             // dd($mem_nm);
             $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
         }
-        $query = $query->where('reg_status','!=','new')->where('memo_id','!=','');
-        // ->whereNull('joi_memo_id')
-        $query = $query->orWhere('joi_memo_id','') ->whereNull('joi_memo_id');
+        
+        $query  = wbApplicant::where('memo_id','!=','')
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                    ->orWhere('reg_status','')
+                    ->orWhereNull('reg_status');
+            })
+            ->whereNotNull('memo_no');
+
+        // $query = $query->where('reg_status','!=','new')->where('memo_id','!=','');
+        // // ->whereNull('joi_memo_id')
+        // $query = $query->orWhere('joi_memo_id','') ->whereNull('joi_memo_id');
+
         $query = $query->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id');
 
         $join_lt=  $query->paginate(100);
@@ -1178,11 +1323,20 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $join_print = wbApplicant::where('mem_stat','A')
-            ->where('reg_status','!=','new')
-            // ->where('mem_id', $id) 
-            ->where('mem_id', $id_a) 
-            ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $join_print = wbApplicant::where('mem_stat','A')
+        //     ->where('reg_status','!=','new')
+        //     // ->where('mem_id', $id) 
+        //     ->where('mem_id', $id_a) 
+        //     ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+            $join_print  = wbApplicant::where('mem_stat','A')->where('mem_id', $id_a)
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                      ->orWhere('reg_status','')
+                      ->orWhereNull('reg_status');
+            })
+            ->whereNull('joi_memo_id')->orWhere('joi_memo_id','')
+
             ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id')
             ->first();
         // dd($join_print);
@@ -1242,14 +1396,23 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $join_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $join_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+        $join_print  = wbApplicant::where('mem_stat','A')->where('mem_id', $id_a)
+        ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                  ->orWhere('reg_status','')
+                  ->orWhereNull('reg_status');
+        })
+        // ->whereNull('joi_memo_id')->orWhere('joi_memo_id','')
+
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no')
         ->first();
-
+//  dd($join_print );
         DB::table('print_letter_mast')->where('memo_id',$memo_id)
         ->update([
             'joining_letter_stat' => 'T',
@@ -1275,9 +1438,16 @@ class AdminMemberController extends Controller
         // dd($joi_memo_id);
 
         
-        $query = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        ->where('joi_memo_id','!=','')
+        // $query = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // ->where('joi_memo_id','!=','')
+
+        $query  = wbApplicant::where('mem_stat','A')->where('joi_memo_id','!=','')
+        ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                  ->orWhere('reg_status','')
+                  ->orWhereNull('reg_status');
+        })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no',);
         if($memo_no != '')
         {
@@ -1328,15 +1498,26 @@ class AdminMemberController extends Controller
         
         // dd($memo_id);
 
-        $join_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $join_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+        $join_print  = wbApplicant::where('mem_stat','A') 
+        ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                  ->orWhere('reg_status','')
+                  ->orWhereNull('reg_status');
+        })
+            ->where('mem_id', $id_a) 
+            ->orWhere('joi_memo_id','')
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no')
         ->first();
+        // dd($join_print);
         $memo_id = $join_print['memo_id'];
-        
+        // $memo_id = $join_print->memo_id;
+        // dd( $memo_id);
         $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)->value('joining_letter_dt');
            
             // dd( $memo_id);
@@ -1352,10 +1533,18 @@ class AdminMemberController extends Controller
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
         
-        $query = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        ->where('joi_memo_id','!=','')
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id',);
+        // $query = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // ->where('joi_memo_id','!=','')
+
+        $query  = wbApplicant::where('mem_stat','A') 
+            ->where('joi_memo_id','!=','') 
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                    ->orWhere('reg_status','')
+                    ->orWhereNull('reg_status');
+            })
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id',);
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1392,12 +1581,21 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $dec_print = wbApplicant::where('mem_stat','A')
-            ->where('reg_status','!=','new')
-            // ->where('mem_id', $id) 
-            ->where('mem_id', $id_a) 
-            ->where('joi_memo_id','!=','')
-            // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $dec_print = wbApplicant::where('mem_stat','A')
+        //     ->where('reg_status','!=','new')
+        //     // ->where('mem_id', $id) 
+        //     ->where('mem_id', $id_a) 
+        //     ->where('joi_memo_id','!=','')
+        //     // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+            $dec_print  = wbApplicant::where('mem_stat','A')             
+                ->where('mem_id', $id_a) 
+                ->where('joi_memo_id','!=','') 
+                ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                    ->orWhere('reg_status','')
+                    ->orWhereNull('reg_status');
+                })
             ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no')
             ->first();
         // dd($dec_print);
@@ -1456,13 +1654,24 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $dec_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        // ->where('dec_memo_id','!=','')
-        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no')
+        // $dec_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // // ->where('dec_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+        $dec_print  = wbApplicant::where('mem_stat','A')             
+            ->where('mem_id', $id_a) 
+            ->where('joi_memo_id','!=','') 
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
+            ->orWhere('joi_memo_id','') 
+            ->whereNull('joi_memo_id')
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no')
         ->first();
 
         DB::table('print_letter_mast')->where('memo_id',$memo_id)
@@ -1484,11 +1693,19 @@ class AdminMemberController extends Controller
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
 
-        $query = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id_a) 
-        ->where('dec_memo_id','!=','')
-        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $query = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id_a) 
+        // ->where('dec_memo_id','!=','')
+        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        
+        $query  = wbApplicant::where('mem_stat','A')             
+            ->where('dec_memo_id','!=','') 
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no');
 
         if($memo_no != '')
@@ -1529,12 +1746,21 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $dec_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        // ->where('dec_memo_id','!=','')
-        ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $dec_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // // ->where('dec_memo_id','!=','')
+        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+        $dec_print  = wbApplicant::where('mem_stat','A')             
+            ->where('dec_memo_id','!=','')
+            ->where('mem_id', $id_a) 
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no')
         ->first();
         $memo_id = $dec_print->memo_id;
@@ -1551,9 +1777,17 @@ class AdminMemberController extends Controller
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
         
-        $query = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        ->where('dec_memo_id','!=','')
+        // $query = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // ->where('dec_memo_id','!=','')
+
+        $query  = wbApplicant::where('mem_stat','A')             
+        ->where('dec_memo_id','!=','') 
+        ->where(function ($query) {
+        $query->where('reg_status','!=','new')
+            ->orWhere('reg_status','')
+            ->orWhereNull('reg_status');
+        })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion',   'guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id','app_memo_id','app_rand_no');
         if($memo_no != '')
         {
@@ -1591,13 +1825,22 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $app_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        ->where('dec_memo_id','!=','')
-        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id')
+        // $app_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // ->where('dec_memo_id','!=','')
+        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        
+        $app_print  = wbApplicant::where('mem_stat','A') 
+            ->where('mem_id', $id_a) 
+            ->where('dec_memo_id','!=','') 
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id')
         ->first();
     // dd($app_print);
 
@@ -1654,12 +1897,21 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $app_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        ->where('dec_memo_id','!=','')
-        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+        // $app_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // ->where('dec_memo_id','!=','')
+        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+        $app_print  = wbApplicant::where('mem_stat','A') 
+            ->where('mem_id', $id_a) 
+            ->where('dec_memo_id','!=','') 
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no')
         ->first();
         
@@ -1682,12 +1934,20 @@ class AdminMemberController extends Controller
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
 
-        $query = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id_a) 
-        ->where('app_memo_id','!=','')
-        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id');
+        // $query = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id_a) 
+        // ->where('app_memo_id','!=','')
+        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
+
+        $query  = wbApplicant::where('mem_stat','A') 
+            ->where('app_memo_id','!=','')
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id','state_nm');
         // ->first();
         if($memo_no != '')
         {
@@ -1727,15 +1987,24 @@ class AdminMemberController extends Controller
             $id_a = $id;
         }
 
-        $app_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        // ->where('mem_id', $id) 
-        ->where('mem_id', $id_a) 
-        ->where('dec_memo_id','!=','')
-        // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
-        ->select('mem_id','memo_id','mem_nm','mem_add','district','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no')
-        ->first();
+        // $app_print = wbApplicant::where('mem_stat','A')
+        // ->where('reg_status','!=','new')
+        // // ->where('mem_id', $id) 
+        // ->where('mem_id', $id_a) 
+        // ->where('dec_memo_id','!=','')
+        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
 
+        $app_print  = wbApplicant::where('mem_stat','A') 
+            ->where('mem_id', $id_a)
+            ->where('app_memo_id','!=','')
+            ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+            })
+            ->select('mem_id','memo_id','mem_nm','mem_add','district','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no','state_nm')
+            ->first();
+// dd($app_print);
         $memo_id = $app_print->memo_id;
         // dd($memo_id);
         $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)

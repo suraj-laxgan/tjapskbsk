@@ -53,7 +53,7 @@
                 </tr>
                 <tr>
                     <td class="text_black_1" align="justify">
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ $app_print->mem_nm }} is hereby appointed as {{ $app_print->mem_desig }} in {{ $app_print->district }} District at  {{ $app_print->mem_posting_place }} Office. You are requested to join within the fortnight of the  receipt of this letter.</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ $app_print->mem_nm }} is hereby appointed as {{ $app_print->mem_desig }} in {{ $app_print->district }} District at  {{ $app_print->mem_posting_place }} Office of {{ $app_print->state_nm }}. You are requested to join within the fortnight of the  receipt of this letter.</p>
                       <p>&nbsp;</p>
                     </td>
                    

@@ -114,7 +114,9 @@
                                         <td>{{ $mem->mem_posting_place }}</td>
                                          <td>
                                             @if($mem["export_stat"] != 'Y')
-                                                <a href="{{url('ad-mem-export/' .$mem['mem_id'].'?mem_id='.request('mem_id'))}}" class=""><button type='button' class='button22' >Export</button></a>
+                                                {{-- <a href="{{url('ad-mem-export/' .$mem['mem_id'].'?mem_id='.request('mem_id'))}}" class=""><button type='button' class='button22' >Export</button></a> --}}
+
+                                                <a href="{{url('ad-mem-export/' .$mem->mem_id)}}" class=""><button type='button' class='button22' >Export</button></a>
                                             
                                             @else
                                                 <button type='button' class='button22'style='color:red'>Done</button>

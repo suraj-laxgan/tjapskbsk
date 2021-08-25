@@ -7,7 +7,7 @@
 @endsection
 @section('content')
     <div class="container-fluid">
-        @include('admin.header.adminMasterEntryHeader')
+        @include('admin.header.adminStateheader')
         <div class="col-md-12">
             <div class="row">       
                 <div style="width: 15%">&nbsp;</div>     
@@ -17,8 +17,8 @@
                                     {{ session('msg') }}
                                 </div>
                             @endif
-                            <div style="text-align: center;color:gray;font-size:15px;margin-top:-15px"><b><u>CREATE USER</u></b></div>
-                            <form method="POST" action="{{ url('ad-cuser') }}"  enctype="multipart/form-data">
+                            <div style="text-align: center;color:gray;font-size:15px;margin-top:-15px"><b><u>CREATE STATE USER</u></b></div>
+                            <form method="POST" action="{{ url('ad-cuser-state') }}"  enctype="multipart/form-data">
                                 @csrf 
                                     <div class="col-sm-12" >
                                         <select name="state_nm" id="state_nm" class="form-controls"  >
@@ -50,8 +50,8 @@
                                     <div class="col-sm-12" style="margin-top: 5px">
                                             <select name="user_group" id="user_group" class="form-controls"  >
                                                 <option value="">Select User Group</option>
-                                                <option value="SU">Admin</option>
-                                                {{-- <option value="US">User</option> --}}
+                                                {{-- <option value="SU">Admin</option> --}}
+                                                <option value="US">User</option>
                                             </select>
                                             @if ($errors->has('user_group'))
                                                 <div class="text-danger">
@@ -60,36 +60,14 @@
                                             @endif
                                     </div>
                                     <div class="col-sm-12" style="margin-top: 5px">
-                                        <input type="text" id="admin_name" class="register_input" name="admin_name" required  autocomplete="off"/>
-                                        <label for="register_input" placeholder="Enter User Name "></label>
-                                        @if ($errors->has('admin_name'))
-                                            <div class="text-danger">
-                                                {{ $errors->first('admin_name') }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="col-sm-12" style="margin-top: 5px">
-                                        <select name="user_gender" id="user_gender" class="form-controls"  >
-                                            <option value="">Select User Gender</option>
-                                            <option value="M">M</option>
-                                            <option value="F">F</option>
-                                        </select>
-                                        @if ($errors->has('user_gender'))
-                                            <div class="text-danger">
-                                                {{ $errors->first('user_gender') }}
-                                            </div>
-                                        @endif
-                                </div>
-                                    <div class="col-sm-12" style="margin-top: 5px">
-                                        <input type="text" id="admin_user_id" class="register_input" name="admin_user_id" required  autocomplete="off"/>
+                                        <input type="text" id="user_id" class="register_input" name="user_id" required  autocomplete="off"/>
                                         <label for="register_input" placeholder="Enter User Id "></label>
-                                        @if ($errors->has('admin_user_id'))
+                                        @if ($errors->has('user_id'))
                                             <div class="text-danger">
-                                                {{ $errors->first('admin_user_id') }}
+                                                {{ $errors->first('user_id') }}
                                             </div>
                                         @endif
                                     </div>
-                                    
                                     <div class="col-sm-12" >
                                         <input type="email" id="email" class="register_input" name="email"  required autocomplete="off"/>
                                         <label for="register_input" placeholder="Enter e@mail"></label>
@@ -101,11 +79,11 @@
                                     </div>
                                 
                                     <div class="col-sm-12" >
-                                        <input type="password" id="plan_password" class="register_input" name="plan_password" required autocomplete="off"/>
+                                        <input type="password" id="password" class="register_input" name="password" required autocomplete="off"/>
                                         <label for="register_input" placeholder="Enter Password"></label>
-                                        @if ($errors->has('plan_password'))
+                                        @if ($errors->has('password'))
                                             <div class="text-danger">
-                                                {{ $errors->first('plan_password') }}
+                                                {{ $errors->first('password') }}
                                             </div>
                                         @endif
                                     </div>

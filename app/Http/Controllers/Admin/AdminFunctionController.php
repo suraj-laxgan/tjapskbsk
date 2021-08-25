@@ -8,6 +8,11 @@ use DB;
 
 class AdminFunctionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
+    
     public function adminFunction()
     {
         return view ('admin.function.adminFunction');
@@ -18,16 +23,30 @@ class AdminFunctionController extends Controller
         return view ('admin.function.adminMemAuthentication');
     }
 
-    public function adminGrOfficeStaff()
+    // public function adminGrOfficeStaff()
+    // {
+    //     $userid = request('userid1');
+    //     // dd( $userid);
+    //     $query = DB::table('l_admin') ->orderBy('userid', 'asc');
+    //     if($userid != "")
+    //     {
+    //         $query =  $query ->where('userid', 'like', '%'.$userid.'%');
+    //     }
+    //     $grstaff = $query->get();
+    //     return view ('admin.function.adminGrOfficeStaff',compact('grstaff'));
+    // }
+    
+    public function adminGrOfficeStaffMin()
     {
-        $userid = request('userid1');
-        // dd( $userid);
-        $query = DB::table('l_admin') ->orderBy('userid', 'asc');
-        if($userid != "")
+        $admin_user_id = request('userid1');
+        // dd( $admin_user_id);
+        $query = DB::table('admin_user') ->orderBy('admin_user_id', 'asc');
+        if($admin_user_id != "")
         {
-            $query =  $query ->where('userid', 'like', '%'.$userid.'%');
+            $query =  $query ->where('admin_user_id', 'like', '%'.$admin_user_id.'%');
         }
         $grstaff = $query->get();
+        // dd( $grstaff);
         return view ('admin.function.adminGrOfficeStaff',compact('grstaff'));
     }
 
@@ -36,9 +55,9 @@ class AdminFunctionController extends Controller
         $userid = $request->userid;
         $status = $request->status;
         // dd(  $userid, $status);
-        $query = DB::table('l_admin')->where('userid',$userid)
+        $query = DB::table('admin_user')->where('admin_user_id',$userid)
             ->update([
-                'status' => $status
+                'admin_status' => $status
             ]);
         return back();    
     }

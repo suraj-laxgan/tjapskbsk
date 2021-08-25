@@ -56,6 +56,10 @@ Route::post('/admin-add-state',[AdminStateController::class,'addState'])->name('
 Route::get('/admin-state-view',[AdminStateController::class,'adminStateView'])->name('admin.state-view');
 Route::get('/admin-state-edit/{id}',[AdminStateController::class,'StateEdit'])->name('admin.state_edit');
 Route::post('/admin-state-edit-upload',[AdminStateController::class,'adminStateEditUp'])->name('admin.stateup');
+Route::get('ad-cuser-state',[AdminStateController::class,'adminCreateStateUser'])->name('add.CreuserState');
+Route::post('ad-cuser-state',[AdminStateController::class,'addCreateStateUser'])->name('add.Createuser');
+
+
 // ########### Admin State End ##########
 
 // ########### Admin Membership Start ##########
@@ -67,8 +71,11 @@ Route::get('/ad-member-main',[AdminMemberController::class,'adminMemberMain'])->
 Route::get('/ad-member',[AdminMemberController::class,'adminMember'])->name('ad.adminmember');
 Route::post('/ad-member-regis',[AdminMemberController::class,'adminMemberRegis'])->name('ad.adminmemberregis');
 Route::post('/find_designation_name',[AdminMemberController::class ,'findDesignationName'])->name('admin.designationname');
-Route::post('/find_dis_name',[AdminMemberController::class ,'findDisName']);
+// Route::post('/find_dis_name',[AdminMemberController::class ,'findDisName']);
 Route::post('/find-state-name',[AdminMemberController::class ,'findStateName']);
+Route::post('/ajax-find-district-name',[AdminMemberController::class ,'dkName']);
+Route::post('/ajax-find-block-name',[AdminMemberController::class ,'blockName']);
+
 
 // Search Existing Member
 
@@ -185,7 +192,12 @@ Route::get('ad-function',[AdminFunctionController::class,'adminFunction'])->name
 Route::get('ad-mem-authentication',[AdminFunctionController::class,'adminMemAuthentication'])->name('add.MemAuthent');
 
 // Grant Revoke Office Staff
-Route::get('ad-gr-office-staff',[AdminFunctionController::class,'adminGrOfficeStaff'])->name('add.GrOfStaff');
+// Route::get('ad-gr-office-staff',[AdminFunctionController::class,'adminGrOfficeStaff'])->name('add.GrOfStaff');
+
+// test for admin new project
+Route::get('ad-gr-office-staff',[AdminFunctionController::class,'adminGrOfficeStaffMin'])->name('add.GrOfStaff');
+
+
 Route::post('ad-gan-rvoff-staff',[AdminFunctionController::class,'revokeStaffUp'])->name('add.re.staff');
 
 // Active/ Inactive Member

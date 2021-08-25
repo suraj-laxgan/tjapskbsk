@@ -108,7 +108,7 @@
             <div class="main-menu">
                 <!-- <h5 class="sidenav-heading">Main</h5> -->
                 <ul id="side-main-menu" class="side-menu list-unstyled scroll_view" style="margin-top:-10px">
-                    @if(Auth::guard('admin')->check() and Auth::guard('admin')->user()->user_group == "SU")                  
+                    @if(Auth::guard('admin')->check() and Auth::guard('admin')->user()->user_group == "SU" )                  
                         <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#00c0ff">
                             <tr>
                                 <td height="2px" bgcolor="ffffff"></td>
@@ -123,33 +123,36 @@
                                     </a>
                                 </td>
                             </tr>
+                            
                             <tr>
                                 <td valign="middle">
-                                    <a href="{{ route('admin.statemain') }}" style=" text-decoration:none;" class="ad_left_menu {{ request()->is('admin-state-main') || request()->is('admin-state') || request()->is('admin-state-view')  ? 'ad_active_manu':'' }}">
+                                    <a href="{{ route('admin.statemain') }}" style=" text-decoration:none;" class="ad_left_menu {{ request()->is('admin-state-main') || request()->is('admin-state') || request()->is('admin-state-view') || request()->is('ad-cuser-state')  ? 'ad_active_manu':'' }}">
                                         <i class="fas fa-university"></i>State
                                     </a>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign="middle">
-                                    <a href="{{ route('ad.adminmembermain') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-member-main') ? 'ad_active_manu':'' }}">
+                                    <a href="{{ route('ad.adminmembermain') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-member-main') || request()->is('ad-member') || request()->is('ad-exismember') || request()->is('ad-member-query') || request()->is('ad-expo-member') || request()->is('ad-confi-letter') || request()->is('ad-joining-letter')  || request()->is('ad-repjoining-letter') || request()->is('ad-decal-letter') || request()->is('ad-reprindecal-letter') || request()->is('ad-appointment-letter') || request()->is('ad-rep-appointment-letter')? 'ad_active_manu':'' }}">
                                         <i class="fas fa-users"></i>Membership
                                     </a>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign="middle">
-                                    <a href="{{ route('ad.mas') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-mas') ? 'ad_active_manu':'' }}">
+                                    <a href="{{ route('ad.mas') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-mas') || request()->is('ad-designation') || request()->is('ad-organiser') || request()->is('ad-districts')  || request()->is('ad-block') || request()->is('ad-staff') || request()->is('ad-cuser')? 'ad_active_manu':'' }}">
                                         <i class="fas fa-chalkboard-teacher"></i>Master Entry 
                                     </a>
                                 </td>
                             </tr>
                             <tr>
-                                <td valign="middle">
-                                    <a href="{{ route('add.function') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-function') ||  request()->is('ad-mem-authentication') ||  request()->is('ad-gr-office-staff') ||  request()->is('ad-ac-in-mem') ? 'ad_active_manu':'' }}">
-                                        <i class="fas fa-user-cog"></i>Function
-                                    </a>
-                                </td>
+                                @if(Auth::guard('admin')->check() and Auth::guard('admin')->user()->user_group == "SU"  and Auth::guard('admin')->user()->admin_status == "T" ) 
+                                    <td valign="middle">
+                                        <a href="{{ route('add.function') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-function') ||  request()->is('ad-mem-authentication') ||  request()->is('ad-gr-office-staff') ||  request()->is('ad-ac-in-mem') ? 'ad_active_manu':'' }}">
+                                            <i class="fas fa-user-cog"></i>Function
+                                        </a>
+                                    </td>
+                                @endif
                             </tr>
                             <tr>
                                 <td valign="middle">

@@ -18,7 +18,7 @@
                                 <div class="row" >
                                     <div class="col-sm-10" >
                                         <!-- <label>User ID :</label>&nbsp;<font color="#FF0000">*</font> -->
-                                        <input type="text" placeholder="Enter User ID " id="userid1" name="userid" class="form-controls" value="{{ request('userid1') }}" autocomplete="off" >
+                                        <input type="text" placeholder="Enter User ID " id="userid1" name="admin_user_id" class="form-controls" value="{{ request('userid1') }}" autocomplete="off" >
                                     </div>
                                    
                                     <div class="col-sm-1" >
@@ -42,14 +42,16 @@
                                         <th>Password</th>
                                         <th>Status</th>
                                         <th>Action</th>
-                                        {{-- <th>Remarks</th> --}}
+                                        <th>Remarks</th>
                                     </tr>
                                     @foreach ($grstaff as $grs )
                                         <tr>
-                                            <td>{{ $grs->userid }}</td>
-                                            <td>{{ $grs->password }}</td>
+                                            {{-- <td>{{ $grs->userid }}</td> --}}
+                                            <td>{{ $grs->admin_user_id }}</td>
+                                            <td>{{ $grs->plan_password }}</td>
 
-                                            @if(  $grs->status != 'T' )
+                                            {{-- @if(  $grs->status != 'T' ) --}}
+                                            @if(  $grs->admin_status != 'T' )
                                                 <td style="color:red"><b>Inactive</b></td>
                                             @else
                                                 <td style="color:green"><b>Active</b></td>
@@ -58,14 +60,17 @@
                                             <td >
                                                 <form method="POST" action="{{ url('ad-gan-rvoff-staff') }}"  enctype="multipart/form-data">
                                                     @csrf 
-                                                    <input type="hidden" value="{{ $grs->userid }}" name='userid'>
-                                                    @if($grs->status != 'T')
+                                                    {{-- <input type="hidden" value="{{ $grs->userid }}" name='userid'> --}}
+                                                    <input type="hidden" value="{{ $grs->admin_user_id }}" name='userid'>
+                                                    {{-- @if($grs->status != 'T') --}}
+                                                    @if(  $grs->admin_status != 'T' )
                                                         <button style="color:green" name="status" class="button22" value="T">Grant</button>
                                                     @else
                                                         <button style="color:red" name="status" class="button22" value="F">Revoke</button>
                                                     @endif
                                                 </form>
                                             </td>
+                                            <td></td>
                                         </tr>
                                     @endforeach
                                 </table>   

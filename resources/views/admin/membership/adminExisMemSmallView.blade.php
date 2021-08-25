@@ -33,7 +33,7 @@
 					
 						<div style='width:60%''>
 							{{  $mem_view->guard_nm }}<br>
-							{{  "State"}}<br>
+							{{  $mem_view->state_nm}}<br>
 							{{  $mem_view->mem_posting_place }}<br>
 							{{  $mem_view->mem_desig }}<br>
 							{{  $mem_view->entry_dt }}<br>

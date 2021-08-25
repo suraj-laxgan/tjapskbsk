@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Admin\State;
 use App\Helpers\Helper;
 use Illuminate\Support\Str;
+use DB;
+use App\Models\StateUsers\StUsers;
+use Illuminate\Support\Facades\Hash;
+
 
 
 
@@ -235,5 +239,63 @@ class AdminStateController extends Controller
       return redirect()->route('admin.state-view',['state_nm'=>$state_nm,'state_id'=>$state_id,'head_off_nm'=>$head_off_nm, 'contact_no'=>$contact_no, 'color_nm'=>$color_nm])->with('msg','State has been Updated successfully !!!');;
     }
 
+    public function adminCreateStateUser()
+    {
+        $all_state = DB::table('state_mast')->select('state_nm','state_code')->get();
+        // dd($all_state);
+        return view ('admin.state.adminCreateStateUser',compact('all_state'));
+    }
 
+    public function addCreateStateUser(Request $request)
+    {
+        $request->validate([
+            'state_nm' => 'required',
+            'state_code' => 'required',
+            'user_group' => 'required',
+            'user_id' => 'required|string|max:255|unique:state_users_mast',
+            'email' => 'required|string|email|max:255|unique:state_users_mast',
+            'password' => 'required',
+            // 'plain_password' => 'required'
+        ],
+        [
+            'state_nm.required' => 'State name is required',
+            'state_code.required' => 'State code is required ',
+            'user_group.required' => 'User group is required ',
+            'user_id.required' => 'User id is requirfd',
+            'email' => 'Email is required',
+            'password' => 'Password is required',
+        ]);
+        $user_group =$request->user_group;
+        // dd($user_group);
+        $max_users_id = DB::table('state_users_mast')->orderBy('ur_id','desc')->value('ur_id');
+       
+        if($max_users_id=="")
+        {
+            $ur_id =  $user_group ."00001";
+        }
+        else{
+  
+            $lastp = substr($max_users_id,2,5);
+            $lastpp = ++$lastp;
+            $last = str_pad($lastpp,5,"0",STR_PAD_LEFT);
+            $ur_id  = $user_group . $last;
+          }
+// dd($ur_id);
+          $user = StUsers::create([
+            'ur_id'=>$ur_id,
+            'state_nm' => $request->state_nm,
+            'state_code' => $request->state_code,
+            'user_group' => $request->user_group,
+            'user_id' => $request->user_id,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'plain_password' => $request->password,
+
+        ]);
+       
+        return redirect()->route('add.CreuserState')->with('msg','State users has been created successfully');
+    }
 }
+
+
+

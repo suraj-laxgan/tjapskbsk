@@ -19,17 +19,15 @@
                 
                 <div class='row'>
                     <div class="card-body"style='border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);'>
-                        {{-- <div class="" id="mem_dist_show" > --}}
+                        
+                        <div class="col-sm-12" style="margin-top: 5px">
                             <input type="hidden"  name="mem_id" value="{{ $mem_edit->mem_id }}" >
 
-                            {{-- <div class="col-sm-12" >
-                                <select name="state_nm" id="state_n" class="form-controls"         onChange="findStateName()">
-                                    <option value="">Select State</option>
-                                    @foreach($state_name as $sname)
-                                        <option value="{{$sname->state_code}}">{{$sname->state_nm}}</option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
+                            <select name="state_nm" id="state_n" class="form-controls"         onChange="findStateName()" disabled="true">
+                                <option value="">Select State</option>
+                                    <option value="{{$mem_edit->state_id}}" selected>{{$mem_edit->state_nm}}</option>
+                            </select>
+                        </div>
 
                         <div class="col-sm-12" style="margin-top: 5px"> 
                             <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ $mem_edit->mem_nm }}"  autocomplete="off"/>
@@ -137,12 +135,12 @@
                         </div>
                         <div class="" id="mem_dist_show" style="display:none ;padding-top: 5px">
                             <div class="col-sm-12" >
-                                    <select name="district" id="mem_dist" class="form-controls" onChange="findDisName()">
-                                        <option value="">Select District</option>
-                                        @foreach($mem_dist as $dist)
-                                            <option value="{{$dist->district_nm}}" {{ ($mem_edit->district == $dist->district_nm)? 'selected':'' }}>{{$dist->district_nm}}</option>
-                                        @endforeach
-                                    </select>
+                                <select name="district_nm" id="dis_n" class="form-controls" onChange="blockName()">
+                                    <option value="">Select District</option>
+                                    @foreach($district_nm as $dist)
+                                        <option value="{{$dist->district_nm}}" {{ ($mem_edit->district == $dist->district_nm)? 'selected':'' }}>{{$dist->district_nm}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="" style="display:none;padding-top: 5px" id="place_of_post_show">
@@ -154,7 +152,7 @@
                         </div>
                         <div class="col-sm-12" style="padding-top: 5px">
                             <input type="file" id="profile_pic" name="profile_pic" class="form-controls"  autocomplete="off" >
-                            <img src="{{ asset('mem_regis_upload/'.$mem_edit->profile_pic) }}" width="100" height="100" />
+                            <img src="{{ asset('photo/'.$mem_edit->profile_pic) }}" width="100" height="100" />
                         </div>
                     </div>
                 </div>
@@ -217,7 +215,9 @@
         {
             // alert('hi');
             var des_type = $('#des_type').val();
-    //alert(des_type);
+            var state_id = $('#state_n').val();
+
+    // alert(des_type);
             $('#mem_dist_show').hide();
             $('#place_of_post_show').hide();
             if(des_type == "DISTRICT OFFICE" || des_type == "BLOCK OFFICE"){
@@ -230,6 +230,7 @@
             type : 'post',
             url  : "{{ url('/find_designation_name')}}",
             data: {'des_type' : des_type,
+                'state_id' : state_id,
                 '_token':$('input[name=_token]').val()},   
             datatype : 'html',
             success:function(data)
@@ -245,33 +246,32 @@
             } 
         });
         }
-        function findDisName()
-        {
-            // alert('hi');
-            var mem_dist = $('#mem_dist').val();
-    //alert(des_type);
-            
+        function blockName() {
+            //   alert('hi');
+            var state_id = $('#state_n').val();
+            var district_nm = $('#dis_n').val();
+            // alert(district_nm);
             $.ajax({
             type : 'post',
-            url  : "{{ url('/find_dis_name')}}",
-            data: {'mem_dist' : mem_dist,
+            url  : "{{ url('/ajax-find-block-name')}}",
+            data: {'state_id' : state_id,
+                    'district_nm' : district_nm,
                 '_token':$('input[name=_token]').val()},   
             datatype : 'html',
             success:function(data)
             {
-            var place_of_post = '<option value="">Select</option>';
-                        $.each( data, function( index, value )
-                        {
-                            //console.log(index);
-                            place_of_post += '<option value="'+value.block_nm+'">'+value.block_nm+'</option>';
-                            });
-            $('#place_of_post').html(place_of_post);
-            
+                 
+            var block_nm = '<option value="">Select Posting Place</option>';
+                $.each( data, function( index, value )
+                {
+                    // console.log(index); 
+                    block_nm += '<option value="'+value.block_nm+'">'+value.block_nm+'</option>';
+                    });
+            $('#place_of_post').html(block_nm);
             //console.log(data)
             } 
         });
         }
-
       
 
     </script>
@@ -279,7 +279,9 @@
     <script>
         var des_type = "{{ $mem_edit->des_type }}";
         var mem_desig = "{{ $mem_edit->mem_desig }}";
-    //alert(des_type);
+        var state_id = "{{$mem_edit->state_id}}";
+
+    // alert(mem_desig);
         $('#mem_dist_show').hide();
         $('#place_of_post_show').hide();
         if(des_type == "DISTRICT OFFICE" || des_type == "BLOCK OFFICE"){
@@ -292,6 +294,7 @@
         type : 'post',
         url  : "{{ url('/find_designation_name')}}",
         data: {'des_type' : des_type,
+        'state_id' : state_id,
             '_token':$('input[name=_token]').val()},   
         datatype : 'html',
         success:function(data)
@@ -320,8 +323,9 @@
         
         $.ajax({
         type : 'post',
-        url  : "{{ url('/find_dis_name')}}",
-        data: {'mem_dist' : mem_dist,
+        url  : "{{ url('/ajax-find-block-name')}}",
+        data: {'district_nm' : mem_dist,
+        'state_id' : state_id,
             '_token':$('input[name=_token]').val()},   
         datatype : 'html',
         success:function(data)

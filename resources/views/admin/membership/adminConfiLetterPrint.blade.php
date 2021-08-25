@@ -89,7 +89,7 @@
                    </tr>
                    <tr>
                         <td>
-                            <input type="date" value="{{ date('Y-m-d', time()) }}" name ='print_dt'>
+                            <input type="date" value="{{ date('Y-m-d', time()) }}" name ='print_dt'  id ='print_dt' >
                             {{-- <input name="Print" value="Print" type="submit"> --}}
 
                            {{-- <a href="{{ url('ad-printletter/'.$ma_print->mem_id.'?mem_id='.request('mem_id')) }}"><button>Print</button></a>  --}}

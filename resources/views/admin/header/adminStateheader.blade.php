@@ -101,5 +101,9 @@
             <div class="body_circle_icon fas fa-cubes"></div>
             <a href="{{ route('admin.state-view') }}" class="body_link_text {{ request()->is('admin-state-view') ? 'ad_active_manu':'' }} " style="text-decoration:none;">View State</a>
         </span>
+        <span style="position:relative;width:150px">
+            <div class="body_circle_icon fa fa-address-card"></div>
+            <a href="{{ route('add.CreuserState') }}" class="body_link_text {{ request()->is('ad-cuser-state') ? 'ad_active_manu':'' }} " style="text-decoration:none;">Create State User</a>
+        </span>
     </div>
 </div> 

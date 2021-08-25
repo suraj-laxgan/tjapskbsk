@@ -105,7 +105,7 @@
                                             @if($mem->memo_id != '')
                                                
                                                 <button class="btn_reprint button22"style="color:red" 
-                                                id="{{ $mem["mem_id"]}}">Reprint</button>
+                                                id="{{ $mem->mem_id }}">Reprint</button>
                                             @else
                                               {{-- <a href="{{ url('ad-ma-print/'.$mem['mem_id'].'?mem_id='.request('mem_id')) }}" class=""><button type='button' class='button22 ' >Mail/Print</button></a> --}}
 
@@ -153,8 +153,10 @@
     
     $(".btn_reprint").click(function() {
        var mem_id =  $(this).attr('id');
+    //    var memo_id =  $(this).attr('id');
        console.log(mem_id);
        window.open("ad-ma-reprint/"+mem_id, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=50,left=250,width=900,height=600");
+
     //    window.open("admin-mem-query-view?mem_id="+mem_id, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
     });
 
