@@ -1,3 +1,6 @@
+<?php
+use App\Http\Controllers\CommonController;
+?>
 <style type="text/css">
     .dropbtn2 {
     /*background-color: #4CAF50;
@@ -82,6 +85,9 @@
         color:#000000;
     }
 </style>
+@php
+    $permisson_link = CommonController::permissonLink();
+@endphp
 <nav class="side-navbar" style="height:auto;border-right:5px solid #00c0ff; overflow:hidden">
 	<div style="border-right:5px solid #FFFFFF;">
         <div class="side-navbar-wrapper">
@@ -91,24 +97,17 @@
                 <div class="sidenav-header-inner text-center">
 		            @if(Auth::guard('admin')->check())
                         <img src="{{ asset('images1/logo-Trans.png') }}">
-                        {{-- {{ Auth::guard('admin')->user()->admin_name }}  --}}
+                        {{ Auth::guard('admin')->user()->admin_name }} 
                     @endif
                    
 
                 </div>
-                <!-- Small Brand information, appears on minimized sidebar-->
-                <!-- <div class="sidenav-header-logo">
-                    <a href="#" class="brand-small text-center">
-                        <strong class="text-white">O</strong>
-                        <strong class="text-white">E</strong>
-                    </a>
-                </div> -->
             </div>
                 <!-- Sidebar Navigation Menus-->
             <div class="main-menu">
                 <!-- <h5 class="sidenav-heading">Main</h5> -->
                 <ul id="side-main-menu" class="side-menu list-unstyled scroll_view" style="margin-top:-10px">
-                    @if(Auth::guard('admin')->check() and Auth::guard('admin')->user()->user_group == "SU" )                  
+                                    
                         <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#00c0ff">
                             <tr>
                                 <td height="2px" bgcolor="ffffff"></td>
@@ -123,7 +122,7 @@
                                     </a>
                                 </td>
                             </tr>
-                            
+                            @if($permisson_link->state_per == "G")
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('admin.statemain') }}" style=" text-decoration:none;" class="ad_left_menu {{ request()->is('admin-state-main') || request()->is('admin-state') || request()->is('admin-state-view') || request()->is('ad-cuser-state')  ? 'ad_active_manu':'' }}">
@@ -131,6 +130,8 @@
                                     </a>
                                 </td>
                             </tr>
+                            @endif
+                            @if($permisson_link->membership_per == "G")
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('ad.adminmembermain') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-member-main') || request()->is('ad-member') || request()->is('ad-exismember') || request()->is('ad-member-query') || request()->is('ad-expo-member') || request()->is('ad-confi-letter') || request()->is('ad-joining-letter')  || request()->is('ad-repjoining-letter') || request()->is('ad-decal-letter') || request()->is('ad-reprindecal-letter') || request()->is('ad-appointment-letter') || request()->is('ad-rep-appointment-letter')? 'ad_active_manu':'' }}">
@@ -138,6 +139,8 @@
                                     </a>
                                 </td>
                             </tr>
+                            @endif
+                            @if($permisson_link->master_per == "G")
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('ad.mas') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-mas') || request()->is('ad-designation') || request()->is('ad-organiser') || request()->is('ad-districts')  || request()->is('ad-block') || request()->is('ad-staff') || request()->is('ad-cuser')? 'ad_active_manu':'' }}">
@@ -145,15 +148,18 @@
                                     </a>
                                 </td>
                             </tr>
+                            @endif
+                            @if($permisson_link->function_per == "G")
                             <tr>
-                                @if(Auth::guard('admin')->check() and Auth::guard('admin')->user()->user_group == "SU"  and Auth::guard('admin')->user()->admin_status == "T" ) 
+                                
                                     <td valign="middle">
                                         <a href="{{ route('add.function') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('ad-function') ||  request()->is('ad-mem-authentication') ||  request()->is('ad-gr-office-staff') ||  request()->is('ad-ac-in-mem') ? 'ad_active_manu':'' }}">
                                             <i class="fas fa-user-cog"></i>Function
                                         </a>
                                     </td>
-                                @endif
                             </tr>
+                            @endif
+                            @if($permisson_link->mail_per == "G")
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('add.allmail') }}" style="text-decoration:none" 
@@ -162,6 +168,7 @@
                                     </a>
                                 </td>
                             </tr>
+                            @endif
                             {{-- <tr>
                                 <td valign="middle">
                                     <a href="{{ url('#',['menu_status' => 'TES']) }}" style="text-decoration:none" class="ad_left_menu {{ (request('menu_status') == 'TES') ? 'ad_active_manu':'' }}">
@@ -210,12 +217,12 @@
                                 <td height="2px" bgcolor="ffffff"></td>
                             </tr>
                             <tr>
-                                <td height="290px" style="color:#FFFFFF; padding-top:10px;" valign="top">
+                                <td height="400px" style="color:#FFFFFF; padding-top:10px;" valign="top">
                                     <a href="{{ url('#',['menu_status' => 'change_pass']) }}" style="text-decoration:none" class="ad_left_menu {{ (request('menu_status') == 'change_pass') ? 'ad_active_manu':'' }}">Change Password</a>
                                 </td>
                             </tr>
                         </table>
-                    @endif    
+                      
                 </ul>
         
             </div>

@@ -55,6 +55,7 @@
 @endif
         <form class="login100-form validate-form" method="post" action="{{ url('/suadmin-login') }}" id="form" autocomplete="off">
           @csrf
+          
           <div class="wrap-input100 validate-input m-b-26">
             <span class="label-input100">User Email :*</span>
               <input class="input100" id="email" type="text" name="email" placeholder="User Email" value="{{ old('email')  }}" autocomplete="false" >
@@ -65,9 +66,7 @@
             <span class="label-input100">Password :*</span>
             <input class="input100" id="password" type="password" name="password" placeholder="Enter password"><span toggle="#password-field"  style="color:#CCCCCC" class="fa fa-lg fa-eye-slash field-icon toggle-password" ></span>
             <span class="focus-input100"></span>
-                        
           </div>
-		  
 		    <div class="m-b-18">
             <span class="label-input100">&nbsp;</span>
             <div class="g-recaptcha" data-sitekey="6LcT1ZwUAAAAADPxv5Q6gUt6rDNjClF5FPbsbVDO"></div>

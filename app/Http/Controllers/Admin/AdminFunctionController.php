@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Auth;
 
 class AdminFunctionController extends Controller
 {
@@ -47,13 +48,26 @@ class AdminFunctionController extends Controller
         }
         $grstaff = $query->get();
         // dd( $grstaff);
-        return view ('admin.function.adminGrOfficeStaff',compact('grstaff'));
+
+        $permisson_link  =  DB::table('user_permisiion_mast')
+        // ->where('admin_id', $grstaff[0]->admin_id )
+        ->orderBy('admin_id', 'asc')
+        ->get();
+
+        // dd($permisson_link);
+        // $admin_id = Auth::guard('admin')->user()->admin_id;
+        // $permisson_link = DB::table('user_permisiion_mast')
+        //     ->where('admin_id', $admin_id)
+        //     ->first();
+        // dd( $permisson_link);
+        return view ('admin.function.adminGrOfficeStaff',compact('grstaff','permisson_link'));
     }
 
     public function revokeStaffUp(Request $request)
     {
         $userid = $request->userid;
         $status = $request->status;
+       
         // dd(  $userid, $status);
         $query = DB::table('admin_user')->where('admin_user_id',$userid)
             ->update([
@@ -61,7 +75,25 @@ class AdminFunctionController extends Controller
             ]);
         return back();    
     }
-
+    public function updatePermission(Request $request)
+    {
+        $admin_id = $request->admin_id;
+        $state_per = $request->State;
+        $membership_per = $request->Membership;
+        $master_per = $request->master_per;
+        $mail_per = $request->Mail;
+        $function_per = $request->Function;
+        
+        $query = DB::table('user_permisiion_mast')->where('admin_id',$admin_id)
+            ->update([
+                'state_per' => $state_per,
+                'membership_per'=>$membership_per,
+                'master_per'=>$master_per,
+                'mail_per'=>$mail_per,
+                'function_per'=>$function_per
+            ]);
+        return back();    
+    }
     public function adminActIntMember()
     {
        
@@ -111,4 +143,13 @@ class AdminFunctionController extends Controller
             ]);
         return back();
     }
+
+    // public function adminDashboard()
+    // {
+    //     $user_group = Auth::guard('admin')->user()->user_group;
+    //     $admin_id = Auth::guard('admin')->user()->admin_id;
+    //     $permisson_link = DB::table('user_permisiion_mast')->where('admin_id', $admin_id)->where('user_group', $user_group)->first();
+    //     // dd($permisson_link);
+    //     return view('admin.adminHome', compact('permisson_link'));
+    // }
 }

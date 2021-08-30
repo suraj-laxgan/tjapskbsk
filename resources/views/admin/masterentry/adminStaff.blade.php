@@ -20,25 +20,25 @@
                             <label for="register_input" placeholder="Enter First Name " ></label>
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="m_nm" class="register_input" name="m_nm"  />
+                            <input type="text" id="m_nm" class="register_input" name="m_nm" required />
                             <label for="register_input" placeholder="Enter Middle Name "></label>
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="l_nm" class="register_input" name="l_nm"  />
+                            <input type="text" id="l_nm" class="register_input" name="l_nm" required />
                             <label for="register_input" placeholder="Enter Last Name "></label>
                         </div>
                         <div class="col-sm-12" >
-                            <input type="email" id="staff_e_mail" class="register_input" name="staff_e_mail"  />
+                            <input type="email" id="staff_e_mail" class="register_input" name="staff_e_mail" required />
                             <label for="register_input" placeholder="Enter  e@mail  "></label>
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="staff_mob_1" class="register_input" name="staff_mob_1"  />
+                            <input type="text" id="staff_mob_1" class="register_input" name="staff_mob_1" required />
                             <label for="register_input" placeholder="Enter Mobile No  "></label>
                         </div>
                     </div>&nbsp;
                     <div class="card-body"style="border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);" >
                         <div class="col-sm-12" >
-                            <input type="text" id="staff_land_no" class="register_input" name="staff_land_no"  />
+                            <input type="text" id="staff_land_no" class="register_input" name="staff_land_no" required />
                             <label for="register_input" placeholder="Enter Land phone No   "></label>
                         </div>
                       
@@ -47,11 +47,11 @@
                             <textarea name="staff_add" id="staff_add" placeholder="Enter Address" rows="2" class="register_textarea"></textarea>
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="" class="register_input" name=""  />
+                            <input type="text" id="" class="register_input" name="" required />
                             <label for="register_input" placeholder="Enter User ID "></label>
                         </div>
                         <div class="col-sm-12" >
-                            <input type="password" id="" class="register_input" name=""  />
+                            <input type="password" id="" class="register_input" name="" required />
                             <label for="register_input" placeholder="Enter Password   "></label>
                         </div>
                     </div>
@@ -70,12 +70,12 @@
                 {{-- <div style="color:gray"><b>Search Existing Staffs :</b></div> --}}
                     <div class="row"style='margin-top:10px'>
                         <div class="col-sm-4" >
-                            <input type="text" id="f_nm_1" class="register_input" name="f_nm" value="{{request('f_nm')}}" >
+                            <input type="text" id="f_nm_1" class="register_input" name="f_nm" value="{{request('f_nm')}}" required>
                             <label for="register_input" placeholder="Enter First Name "></label>
                         </div>
                         <div class="col-sm-4" >
                             <input type="text" id="l_nm_1" class="register_input" name="l_nm" 
-                            value="{{request('l_nm')}}">
+                            value="{{request('l_nm')}}" required>
                             <label for="register_input" placeholder="Enter Last Name  "></label>
                         </div>
                         <div class="col-sm-1" >

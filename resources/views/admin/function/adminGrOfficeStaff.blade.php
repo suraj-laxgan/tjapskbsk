@@ -1,3 +1,6 @@
+<?php
+use App\Http\Controllers\CommonController;
+?>
 @extends('admin.layout.appnext')
 @section('title')
 	Grant Revoke Office Staff
@@ -45,6 +48,9 @@
                                         <th>Remarks</th>
                                     </tr>
                                     @foreach ($grstaff as $grs )
+                                    @php
+                                        $permision_link = CommonController::permissonLink_2($grs->admin_id,$grs->user_group);
+                                    @endphp
                                         <tr>
                                             {{-- <td>{{ $grs->userid }}</td> --}}
                                             <td>{{ $grs->admin_user_id }}</td>
@@ -70,10 +76,26 @@
                                                     @endif
                                                 </form>
                                             </td>
-                                            <td></td>
+                                            <td>
+                                                @if(  $grs->user_group != 'SU' )
+
+                                                <button class="identifyingClass button22" data-id="{{ $grs->admin_id }}" style="color:green">Permission</button>
+                                                @else
+                                                    <button class="button22"  style="color:red">No Access</button>
+                                                @endif
+                                                
+                                            </td>
                                         </tr>
+                                        
+                                        <input type="hidden" id="state_per{{ $grs->admin_id }}" value="{{ $permision_link->state_per }}">
+                                        <input type="hidden" id="membership_per{{ $grs->admin_id }}" value="{{ $permision_link->membership_per }}">
+                                        <input type="hidden" id="master_per{{ $grs->admin_id }}" value="{{ $permision_link->master_per }}">
+                                        <input type="hidden" id="mail_per{{ $grs->admin_id }}" value="{{ $permision_link->mail_per }}">
+                                        <input type="hidden" id="function_per{{ $grs->admin_id }}" value="{{ $permision_link->function_per }}">
                                     @endforeach
-                                </table>   
+                                </table>
+                               
+         
                             </div>
                         </div>
                     </td>
@@ -81,6 +103,27 @@
                 <tr>
             </table>
         </div>
+
+        <div class="modal fade" id="my_modal" tabindex="-1" role="dialog" aria-labelledby="my_modalLabel">
+            <div class="modal-dialog "  role="dialog">
+                <div class="modal-content" ">
+                    <form action="{{ url('update-permission') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Admin User Permission</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        {{-- <input type="text" id="admin_id" name="admin_id" value="{{ $permision_link->admin_id }}"> --}}
+                        <div id="modal_data"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
     <div> 
 
 @endsection
@@ -89,6 +132,68 @@
     $('#search_gro').click(function(){
     var userid1 = $('#userid1').val();
     window.location.href="ad-gr-office-staff?userid1="+userid1;
+    });
+
+    $(".identifyingClass").click(function () {
+        var admin_id = $(this).attr('data-id');
+        var state_per = $("#state_per"+admin_id).val();
+        var membership_per = $("#membership_per"+admin_id).val();
+        var master_per = $("#master_per"+admin_id).val();
+        var mail_per = $("#mail_per"+admin_id).val();
+        var function_per = $("#function_per"+admin_id).val();
+
+        var arr = [{'nm':'State','per':state_per},{'nm':'Membership','per':membership_per},{'nm':'Master','per':master_per},{'nm':'Mail','per':mail_per},{'nm':'Function','per':function_per}];
+        console.log(arr);
+        var data = '';
+        $.each(arr , function (index, value) {
+            data += '<b>'+value['nm']+'</b>';
+            if (value['per'] != "") {
+                data += '<input name="'+value['nm']+'" type="checkbox" value="'+value['per']+'" checked>';
+            }
+            else{
+                data += '<input name="'+value['nm']+'" type="checkbox" value="G">';
+            }
+        });
+        data += '<input name="admin_id" type="hidden" value="'+admin_id+'">';
+        $("#modal_data").html(data);
+        $('#my_modal').modal('show');
+        // var data = 'state';
+        // if (state_per != "") {
+        //     data += '<input type="checkbox" value="'+state_per+'" checked>';
+        // }
+        // else{
+        //     data += '<input type="checkbox" value="'+state_per+'">';
+        // }
+        // data += 'membership';
+        // if (membership_per != "") {
+        //     data += '<input type="checkbox" value="'+membership_per+'" checked>';
+        // }
+        // else{
+        //     data += '<input type="checkbox" value="'+membership_per+'">';
+        // }
+        // data += 'master';
+        // if (master_per != "") {
+        //     data += '<input type="checkbox" value="'+master_per+'" checked>';
+        // }
+        // else{
+        //     data += '<input type="checkbox" value="'+master_per+'">';
+        // }  
+        // data += 'mail'; 
+        // if (mail_per != "") {
+        //     data += '<input type="checkbox" value="'+mail_per+'" checked>';
+        // }
+        // else{
+        //     data += '<input type="checkbox" value="'+mail_per+'">';
+        // } 
+        // data += 'function';
+        // if (function_per != "") {
+        //     data += '<input type="checkbox" value="'+function_per+'" checked>';
+        // }
+        // else{
+        //     data += '<input type="checkbox" value="'+function_per+'">';
+        // }     
+        
+        // $(".modal-body #hiddenValue").val(my_id_value);
     });
 </script>
 @endpush

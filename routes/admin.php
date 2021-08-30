@@ -34,9 +34,14 @@ Route::get('/dashboard', function () {
 
 require __DIR__ . '/auth.php';  
 
-Route::get('admin/dashboard', function () {
-    return view('admin.adminHome');
-})->middleware(['auth:admin'])->name('admin.dashboard');
+// Route::get('admin/dashboard', function () {
+//     return view('admin.adminHome');
+// })->middleware(['auth:admin'])->name('admin.dashboard');
+
+// Route::get('admin/dashboard', [AdminFunctionController::class,'adminDashboard'])->name('admin.dashboard');
+
+Route::get('admin/dashboard', [AdminLoginController::class,'adminDashboard'])->middleware(['auth:admin'])->name('admin.dashboard');
+
 
 Route::get('/suadmin-login', [AdminLoginController::class, 'create'])
     ->middleware('guest:admin')
@@ -199,6 +204,7 @@ Route::get('ad-gr-office-staff',[AdminFunctionController::class,'adminGrOfficeSt
 
 
 Route::post('ad-gan-rvoff-staff',[AdminFunctionController::class,'revokeStaffUp'])->name('add.re.staff');
+Route::post('update-permission',[AdminFunctionController::class,'updatePermission']);
 
 // Active/ Inactive Member
 Route::get('ad-ac-in-mem',[AdminFunctionController::class,'adminActIntMember'])->name('add.ActIntMem');

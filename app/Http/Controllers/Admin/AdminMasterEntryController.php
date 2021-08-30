@@ -15,6 +15,7 @@ use App\Models\Admin\staff;
 use DB;
 use Illuminate\Support\Str;
 use App\Models\Admin\Admin;
+use App\Models\Admin\AdminUserPermission;
 
 
 class AdminMasterEntryController extends Controller
@@ -604,25 +605,22 @@ class AdminMasterEntryController extends Controller
 
     public function addCreateUser(Request $request)
     {
-        // $request->validate([
-        //     'state_nm' => 'required',
-        //     'state_code' => 'required',
-        //     'user_group' => 'required',
-        //     'user_id' => 'required|string|max:255|unique:state_users_mast',
-        //     'email' => 'required|string|email|max:255|unique:state_users_mast',
-        //     'password' => 'required',
-        //     // 'plain_password' => 'required'
-        // ],
+        $request->validate([
+            'user_group' => 'required',
+            'admin_user_id' => 'required|string|max:255|unique:admin_user',
+            'email' => 'required|string|email|max:255|unique:admin_user',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            // 'plain_password' => 'required'
+        ]);
         // [
-        //     'state_nm.required' => 'State name is required',
-        //     'state_code.required' => 'State code is required ',
         //     'user_group.required' => 'User group is required ',
-        //     'user_id.required' => 'User id is requirfd',
+        //     'admin_user_id.required' => 'User id is requirfd',
         //     'email' => 'Email is required',
         //     'password' => 'Password is required',
         // ]);
         $user_group =$request->user_group;
         // dd($user_group);
+
         $max_admin_id = DB::table('admin_user')->orderBy('admin_id','desc')->value('admin_id');
         if($max_admin_id=="")
         {
@@ -635,23 +633,54 @@ class AdminMasterEntryController extends Controller
             $last = str_pad($lastpp,6,"0",STR_PAD_LEFT);
             $admin_id  = 'AD' . $last;
           }
-// dd($admin_id);
-// $plain_password = $request->state_nm;
-// dd($plain_password );
+
+  
+        // $plain_password = $request->state_nm;
+        // dd($plain_password );
           $user = Admin::insert([
             'admin_id'=>$admin_id,
-            'state_nm' => $request->state_nm,
-            'state_code' => $request->state_code,
             'user_group' => $request->user_group,
             'admin_name' => Str::upper($request->admin_name),
             'user_gender' => $request->user_gender,
             'admin_user_id' => Str::upper($request->admin_user_id) ,
             'email' => Str::lower($request->email),
-            'password' => Hash::make($request->plan_password),
-            'plan_password' => $request->plan_password,
+            'password' => Hash::make($request->password),
+            'plan_password' => $request->password,
             'created_at'=>    date("Y/m/d  h:i:s"),
             'updated_at' => date("Y/m/d  h:i:s")
         ]);
-        return redirect()->route('add.Creuser')->with('msg','State users has been created successfully');
+
+        $max_permission_id = DB::table('user_permisiion_mast')->orderBy('permission_id','desc')->value('permission_id');
+        if($max_permission_id=="")
+        {
+            $permission_id =  "PR000001";
+        }
+        else{
+  
+            $lastp = substr($max_permission_id,2,6);
+            $lastpp = ++$lastp;
+            $last = str_pad($lastpp,6,"0",STR_PAD_LEFT);
+            $permission_id  = 'PR' . $last;
+          }
+        // dd($max_permission_id);
+        // $user_info = DB::table('admin_user')->select('admin_id','admin_user_id')->first();
+        // dd($user_info->admin_user_id);
+        $user_permi = AdminUserPermission::insert([
+            'permission_id'=>$permission_id,
+            'admin_id'=>$admin_id,
+            'admin_user_id' => Str::upper($request->admin_user_id) ,
+            'user_group' => $request->user_group,
+            'main_per'=> $request->main_per,
+            'state_per' => $request->state_per,
+            'membership_per' => $request->membership_per,
+            'master_per' => $request->master_per,
+            'function_per' => $request->function_per,
+            'mail_per' => $request->mail_per,
+            'created_at'=>    date("Y/m/d  h:i:s"),
+            'updated_at' => date("Y/m/d  h:i:s")
+        ]);
+
+        
+        return redirect()->route('add.Creuser')->with('msg','Users has been created successfully');
     }
 }

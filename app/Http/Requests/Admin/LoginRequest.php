@@ -31,6 +31,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|string|email',
             'password' => 'required|string',
+            // 'user_group' => 'SU'|| 'US',
         ];
     }
 
@@ -39,7 +40,10 @@ class LoginRequest extends FormRequest
     // dd(RateLimiter::clear($this->throttleKey()));
     $this->ensureIsNotRateLimited();
 
-    if (! Auth::guard('admin')->attempt($this->only('email', 'password'), $this->filled('remember'))) {
+    $hik=$this->user_group;
+    // dd( $hik);
+
+    if (! Auth::guard('admin')->attempt($this->only('email', 'password'),$this->filled('remember'))) {
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
