@@ -30,7 +30,7 @@ class allMemberExport implements FromCollection,WithHeadings
 
         $mem_stat = request('mem_stat');
 
-
+// dd($mem_nm);
         $query  = wbApplicant::where('mem_stat','A')->whereNotNull('memo_no');
 
           if($des_type != '')

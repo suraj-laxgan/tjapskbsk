@@ -121,8 +121,9 @@ label {
                                                 <span title="State" class="checkmark dotted_text">State</span>
                                             </label>
                                         </div>   --}}
-                                        <label style="margin-left: 15px">Select User Permission : </label>
-                                        <div class="col-sm-12">
+                                        
+                                        {{-- <label style="margin-left: 15px">Select User Permission : </label> --}}
+                                        {{-- <div class="col-sm-12">
                                             <input type="checkbox" id="main_per" name="main_per" value="G" >
                                             <label for="main_per"  >Main</label>
 
@@ -140,7 +141,7 @@ label {
 
                                             <input type="checkbox" id="mail_per" name="mail_per" value="G">
                                             <label for="mail_per" >Mail</label>
-                                        </div>
+                                        </div> --}}
                                     <div class="col-sm-12"style='text-align: center;padding:10px' >
                                         <button type='submit' class='button22' id="search_tn_1">
                                            Add {{-- <i class="fa fa-plus" style="font-size:20px"></i> --}}

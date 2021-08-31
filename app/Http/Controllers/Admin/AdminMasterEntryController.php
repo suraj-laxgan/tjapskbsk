@@ -607,6 +607,7 @@ class AdminMasterEntryController extends Controller
     {
         $request->validate([
             'user_group' => 'required',
+            'admin_name' => 'required',
             'admin_user_id' => 'required|string|max:255|unique:admin_user',
             'email' => 'required|string|email|max:255|unique:admin_user',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -670,12 +671,12 @@ class AdminMasterEntryController extends Controller
             'admin_id'=>$admin_id,
             'admin_user_id' => Str::upper($request->admin_user_id) ,
             'user_group' => $request->user_group,
-            'main_per'=> $request->main_per,
-            'state_per' => $request->state_per,
-            'membership_per' => $request->membership_per,
-            'master_per' => $request->master_per,
-            'function_per' => $request->function_per,
-            'mail_per' => $request->mail_per,
+            'main_per'=> "G",
+            'state_per' => 'R',
+            'membership_per' => "R",
+            'master_per' => "R",
+            'function_per' => "R",
+            'mail_per' => "R",
             'created_at'=>    date("Y/m/d  h:i:s"),
             'updated_at' => date("Y/m/d  h:i:s")
         ]);

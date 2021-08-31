@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Auth;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\activeInactiveExport;
+use PDF;
 class AdminFunctionController extends Controller
 {
     public function __construct()
@@ -50,16 +52,11 @@ class AdminFunctionController extends Controller
         // dd( $grstaff);
 
         $permisson_link  =  DB::table('user_permisiion_mast')
-        // ->where('admin_id', $grstaff[0]->admin_id )
         ->orderBy('admin_id', 'asc')
         ->get();
 
         // dd($permisson_link);
-        // $admin_id = Auth::guard('admin')->user()->admin_id;
-        // $permisson_link = DB::table('user_permisiion_mast')
-        //     ->where('admin_id', $admin_id)
-        //     ->first();
-        // dd( $permisson_link);
+       
         return view ('admin.function.adminGrOfficeStaff',compact('grstaff','permisson_link'));
     }
 
@@ -129,7 +126,56 @@ class AdminFunctionController extends Controller
         $acintive =  $query->paginate(100);
         // $ujde = count( $acintive );
         // dd($acintive);
-        return view ('admin.function.adminActIntMember',compact('acintive'));
+        $media_na = DB::table('fcpm_mast')->where('media_nm','!=','')
+        ->select('media_nm')
+        ->groupBy('media_nm')
+        ->orderBy('media_nm')
+        ->get();
+        // dd($media_na);
+        return view ('admin.function.adminActIntMember',compact('acintive','media_na'));
+    }
+
+    public function activeInactiveExcel()
+    {
+        return Excel::download(new activeInactiveExport, 'statemember.xlsx');
+    }
+
+    public function activeInactivePDF()
+    {
+        $memo_no = request('memo_no_1');
+        $mem_nm = request('mem_nm_1');
+        $media_nm = request('media_nm_1');
+        $mem_stat = request('mem_stat_1');
+        // dd($mem_nm);
+        // $query = ;
+        $query =DB::table('fcpm_mast')->whereIn('mem_stat',['A','D']);
+            // ->get();
+            if($memo_no != '')
+            {
+                $query = $query->where('memo_no', 'like', '%'.$memo_no.'%');
+            }
+           
+            if($mem_nm != '')
+            {
+               
+                $query = $query->where('mem_nm', 'like', '%'.$mem_nm.'%');
+                
+            }
+            
+            if($media_nm != '')
+            {
+                $query = $query->where('media_nm', 'like', '%'.$media_nm.'%');
+            }
+            if($mem_stat != '')
+            {
+                $query = $query->where('mem_stat', $mem_stat);
+            }
+        // $query = $query->select('mem_nm','guard_nm','memo_no','media_nm','birth_dt','mem_posting_place','mem_desig','entry_dt','mem_stat','mem_id','profile_pic'); 
+        $query = $query->get();
+        // dd($query[0]->profile_pic);
+      
+        $pdf = PDF::loadView('admin.function.activeInactivepdf',compact('query'));
+        return $pdf->stream('statemember.pdf');
     }
 
     public function revokeMemberUp(Request $request)

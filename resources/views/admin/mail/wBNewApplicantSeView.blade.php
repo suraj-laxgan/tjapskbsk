@@ -71,7 +71,7 @@
                                 <div class="col-sm-2" style='margin-left:-130px;'>
                                     <!-- <label>&nbsp;&nbsp;</label> -->
                                     <a href="{{url('ad-se-vie-wb')}}">
-                                        <button type ="button" <i class="fa fa-refresh" style="font-size:20px"></i></button>
+                                        <button type ="button"  <i class="fa fa-refresh button22" style="font-size:20px"></i></button>
                                     </a>    
                                 </div>
                             </div>

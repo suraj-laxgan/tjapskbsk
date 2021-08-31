@@ -88,7 +88,10 @@
                             <div class="row ">
                                 <div class="col-sm-6" ></div>
                                 <div class="col-sm-6" style='text-align: right'>
-                                    <a href="{{url('/mem-query-excel')}}"><button type='button' class='button22'>Export To Excel</button></a>
+                                    {{-- <a href="{{url('/mem-query-excel')}}"><button type='button' class='button22'>Export To Excel</button></a> --}}
+                                    <a href="{{route('memqueryexcel',['mem_stat'=>request('mem_stat'),
+                                    'memo_no'=>request('memo_no')
+                                         ])}}"><button type='button' class='button22'>Export To Excel</button></a>
                                 </div>
                             </div>
                         </div>

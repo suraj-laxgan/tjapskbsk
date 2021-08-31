@@ -79,7 +79,8 @@
                                     <!-- <a href="{{url('#')}}"><button type='button' class='blue_button'>Export To Excel</button></a> -->
                                 </div>
                                 <div class="col-sm-6" style='text-align: right'>
-                                    <a href="{{url('/con-let-excel')}}"><button type='button' class='button22'>Export To Excel</button></a>
+                                    <a href="{{route('conLetExcel',['memo_stat'=>request('memo_stat'),
+                                        'district'=>request('district'),'memo_no'=>request('memo_no'),'memo_id'=>request('memo_id')])}}"><button type='button' class='button22'>Export To Excel</button></a>
                                 </div>
                             </div>
                         </div>

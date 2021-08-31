@@ -14,6 +14,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\allMemberExport;
 use App\Exports\allMemberQueryExport;
 use App\Exports\confirmationLetter;
+use App\Exports\joiningLetter;
+
 use Illuminate\Support\Collection;
 use Auth;
 use Illuminate\Support\Str;
@@ -48,23 +50,51 @@ class AdminMemberController extends Controller
     public function adminMemberRegis(Request $request)
     {
        
-    //     $validated = $request->validate([
-    //         // 'state_code' => 'required|max:2',
-    //         'state_nm' => 'required',
-    //         'mem_nm' => 'required',
-    //         'media_nm' => 'required',
-    //         'entry_dt' => 'required',
-    //         'contact_no' => 'required | integer',
-    //         'mem_email' => 'required|string|email|max:255|unique:fcpm_mast',
-    //     ],
-    //     [
-    //         'state_nm.required' => 'State Name is required ',
-    //         'mem_nm.required' => 'Member Name is required ',
-    //         'media_nm.required' => 'Media Name is requirfd',
-    //         'entry_dt.required' => 'Entry Date is required',
-    //         'contact_no.required' => 'Contact No is required',
-    //         'mem_email.required' => 'Email is required'
-    //   ]);
+        $validated = $request->validate([
+            // 'state_code' => 'required|max:2',
+            'state_nm' => 'required',
+            'mem_nm' => 'required',
+            'media_nm' => 'required',
+            'entry_dt' => 'required',
+            'contact_no' => 'required | integer',
+            'mem_email' => 'required|string|email|max:255|unique:fcpm_mast',
+            'guard_nm' => 'required',
+            'birth_dt' => 'required',
+            'mem_add' => 'required',
+            'mem_aadhar_no' => 'required | integer',
+            'mem_pan_no' =>  'required',
+            'mem_voterid_no'=> 'required',
+            'bank_acount_no'=> 'required | integer',
+            'mem_bank_nm' => 'required',
+            'bnk_ifsc_code' => 'required',
+            'des_type' => 'required',
+            'mem_desig' => 'required',
+            'profile_pic' => 'image|mimes:jpg,png|max:2048'
+        ],
+        [
+            'state_nm.required' => 'State Name is required ',
+            'mem_nm.required' => 'Member Name is required ',
+            'media_nm.required' => 'Media Name is requirfd',
+            'entry_dt.required' => 'Entry Date is required',
+            'contact_no.required' => 'Contact No is required',
+            'mem_email.required' => 'Email is required',
+            'guard_nm.required' => 'Guardian name is required',
+            'birth_dt.required' => 'Birth Date is required',
+            'mem_add.required' => 'Address is required',
+            'mem_aadhar_no.required' => 'Aadhar No is required',
+            'mem_pan_no.required' => 'Pan No is required',
+            'mem_voterid_no.required' => 'Votyer id No is required',
+            'bank_acount_no.required' => 'Bank Account No is required',
+            'mem_bank_nm.required' => 'Bank Name is required',
+            'bnk_ifsc_code.required' => 'Bank ifsc code is required',
+            'des_type.required' => 'Designation Type is required',
+            'mem_desig.required' => 'Designation is required',
+            'profile_pic.required' => 'Profile picture is required',
+
+
+
+
+      ]);
     
     //   $max_memo_no = DB::table('memo_no_max')->get();
     //   dd( $max_memo_no);
@@ -641,10 +671,10 @@ class AdminMemberController extends Controller
     public function adminMemberQuery()
     {
        
-        $mem_id = request('mem_id');
+        // $mem_id = request('mem_id');
         $mem_stat = request('mem_stat');
         $memo_no = request('memo_no');
-    //    dd($memo_no);
+    //    dd($mem_id);
 
         // $query =  wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
         // ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm');
@@ -660,15 +690,16 @@ class AdminMemberController extends Controller
         ->select('mem_id','memo_no','mem_nm','guard_nm','mem_quali','birth_dt','media_nm','mem_desig','mem_posting_place','profile_pic','memo_id');
       
   
-            if($mem_id != '')
-            {
-            $query = $query->where('mem_id', 'like', '%' . $mem_id . '%');
-            }
+            // if($mem_id != '')
+            // {
+            // $query = $query->where('mem_id', 'like', '%' . $mem_id . '%');
+            // }
 
             if($mem_stat != '')
             {
             $query = $query->where('mem_stat', 'like', '%' . $mem_stat . '%');
             }
+
             if($memo_no == 'M')
             {
                 $query = $query->where('memo_no', '');
@@ -689,7 +720,7 @@ class AdminMemberController extends Controller
             $mem_query_total= count($mem_query);
             // dd($mem_query_total);
             $mem_query->appends([
-                'mem_id' => $mem_id,
+                // 'mem_id' => $mem_id,
                 'mem_stat' => $mem_stat,
                 'memo_no' => $memo_no,
                
@@ -1470,6 +1501,10 @@ class AdminMemberController extends Controller
        
         // dd($re_join_lt_total );
         return view ('admin.membership.adminRePrintJoinLetter',compact('re_print_join','re_join_lt_total'));
+    }
+    public function joinLetExcel()
+    {
+        return Excel::download(new joiningLetter, 'confirmataon.xlsx');
     }
 
     public function joinRePrintCom($id)

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Active Inactive Member</title>
     <style>
   
 	#customers {
@@ -78,29 +78,28 @@
                         <th  >Posting Place</th>
                         <th >Picture</th>
                     </tr>
-                    {{-- @if ($wbappli_total > 0) --}}
-                        @foreach ($query as $members)
-                        <tr >
-                            <td>{{ $members["mem_id"]}}</td>
-                            <td>{{ $members["memo_no"]}}</td>
-                            <td>{{ $members["mem_nm"]}}</td>
-                            <td>{{ $members["guard_nm"]}}</td>
-                            {{-- <td>{{ $members["mem_quali"]}} </td> --}}
-                            <td>{{ $members["birth_dt"]}}</td>
-                            <td>{{ $members["media_nm"]}}</td>
-                            <td>{{ $members["mem_desig"]}}</td>
-                            <td >{{ $members["mem_posting_place"]}}</td>
-                            <td>
-                                @if ($members->profile_pic != "")
-                                    {{-- <img src="{{ asset('photo/'.$members->profile_pic) }}" width="50" height="50" /> --}}
-                                    <img src="{{ public_path('photo/'.$members->profile_pic) }}" width="50" height="50" />
-
-                                @endif
-                                
-
-                            </td>
-                        </tr>
-                        @endforeach
+                   
+                  
+                    @foreach ($query as $members)
+                    <tr >
+                        <td>{{ $members->mem_id}}</td>
+                        <td>{{ $members->memo_no}}</td>
+                        <td>{{ $members->mem_nm}}</td>
+                        <td>{{ $members->guard_nm}}</td>
+                        {{-- <td>{{ $members->mem_quali}} </td> --}}
+                        <td>{{ $members->birth_dt}}</td>
+                        <td>{{ $members->media_nm}}</td>
+                        <td>{{ $members->mem_desig}}</td>
+                        <td >{{ $members->mem_posting_place}}</td>
+                        <td>
+                            @if ($members->profile_pic != "")
+                                <img src="{{ public_path('photo/'.$members->profile_pic) }}" width="50" height="50" />
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                   
+                   
                 </table>
             </div>
         </div>

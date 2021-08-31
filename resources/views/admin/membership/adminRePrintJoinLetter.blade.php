@@ -71,7 +71,8 @@
                             <div class="row ">
                                 <div class="col-sm-6" ></div>
                                 <div class="col-sm-6" style='text-align: right'>
-                                    <a href="{{url('#')}}"><button type='button' class='button22'>Export To Excel</button></a>
+                                    <a href="{{route('joinLetExcel',['mem_nm'=>request('mem_nm'),
+                                        'district'=>request('district'),'memo_no'=>request('memo_no'),'joi_memo_id'=>request('joi_memo_id')])}}"><button type='button' class='button22'>Export To Excel</button></a>
                                 </div>
                             </div>
                         </div>

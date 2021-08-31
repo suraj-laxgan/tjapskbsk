@@ -124,6 +124,8 @@ Route::get('ad-join-print-com/{id}',[AdminMemberController::class,'joinPrintCom'
 
 // Reprint Joining Letter
 Route::get('ad-repjoining-letter',[AdminMemberController::class,'adminRePrintJoiningLetter'])->name('ad.adminRepriJoinLt');
+Route::get('join-let-excel', [AdminMemberController::class, 'joinLetExcel'])->name('joinLetExcel');
+
 Route::get('ad-join-reprint-com/{id}',[AdminMemberController::class,'joinRePrintCom'])->name('join.reprintcom');
 
 // Declaration Letter
@@ -202,12 +204,15 @@ Route::get('ad-mem-authentication',[AdminFunctionController::class,'adminMemAuth
 // test for admin new project
 Route::get('ad-gr-office-staff',[AdminFunctionController::class,'adminGrOfficeStaffMin'])->name('add.GrOfStaff');
 
-
 Route::post('ad-gan-rvoff-staff',[AdminFunctionController::class,'revokeStaffUp'])->name('add.re.staff');
 Route::post('update-permission',[AdminFunctionController::class,'updatePermission']);
 
 // Active/ Inactive Member
 Route::get('ad-ac-in-mem',[AdminFunctionController::class,'adminActIntMember'])->name('add.ActIntMem');
+Route::get('active-inactive-excel', [AdminFunctionController::class, 'activeInactiveExcel'])->name('activeInactiveExcel');
+Route::get('active_inactive-pdf-gen', [AdminFunctionController::class, 'activeInactivePDF'])->name('pdf.activeInactive');
+
+
 Route::post('ad-revoke-mem-up',[AdminFunctionController::class,'revokeMemberUp'])->name('add.revoke');
 
 

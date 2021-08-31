@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-sm-3" >
                                 <select name="district_nm" id="district_nm_1" class="form-controls" required>
-                                    <option value="">Select District Name</option>
+                                    <option value="">Select District </option>
                                 </select>
                             </div>
                             <div class="col-sm-3" >

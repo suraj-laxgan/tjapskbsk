@@ -4,30 +4,38 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\Admin\wbApplicant;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
 
-class allMemberQueryExport implements FromCollection
+
+class allMemberQueryExport implements FromCollection,WithHeadings
 {
     /**
     * @return \Illuminate\Support\Collection
     */
+
+    public function headings(): array
+    {
+        return ["State Code", "State Name", "Member Name","Media Name", "Entry Date","Contact No","Email","Gurdain Name","Gender","Cast","Date of Birth","Qualification","Relation","Address","Adhar no","Pan No","Voter Id No","Bank Account No","Bank Name","Ifsc Code","Designation Type","Picture","Posting Place","Designation","Memo No"];
+    }
+
     public function collection()
     {
-        $mem_id = request('mem_id');
+        // $mem_id = request('mem_id');
         $mem_stat = request('mem_stat');
         $memo_no = request('memo_no');
-    //    dd($memo_no);
+    //    dd($mem_stat);
 
         $query =  wbApplicant::where('mem_stat','A')->where('reg_status','!=','new')
         ->select('mem_id','memo_no','profile_pic','mem_desig','birth_dt','mem_posting_place','mem_nm','media_nm');
         // dd( $query);
       
-        $all_memid = '';
+        // $all_memid = '';
   
-            if($mem_id != '')
-            {
-            $query = $query->where('mem_id', 'like', '%' . $mem_id . '%');
-            }
+        //     if($mem_id != '')
+        //     {
+        //     $query = $query->where('mem_id', 'like', '%' . $mem_id . '%');
+        //     }
 
             if($mem_stat != '')
             {

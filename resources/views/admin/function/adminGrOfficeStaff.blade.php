@@ -69,7 +69,9 @@ use App\Http\Controllers\CommonController;
                                                     {{-- <input type="hidden" value="{{ $grs->userid }}" name='userid'> --}}
                                                     <input type="hidden" value="{{ $grs->admin_user_id }}" name='userid'>
                                                     {{-- @if($grs->status != 'T') --}}
-                                                    @if(  $grs->admin_status != 'T' )
+                                                    @if( $grs->user_group == 'SU')
+                                                        <p style="color:green" name="status"  ><b>Revoke</b></p>
+                                                    @elseif(  $grs->admin_status != 'T' )
                                                         <button style="color:green" name="status" class="button22" value="T">Grant</button>
                                                     @else
                                                         <button style="color:red" name="status" class="button22" value="F">Revoke</button>
@@ -81,7 +83,7 @@ use App\Http\Controllers\CommonController;
 
                                                 <button class="identifyingClass button22" data-id="{{ $grs->admin_id }}" style="color:green">Permission</button>
                                                 @else
-                                                    <button class="button22"  style="color:red">No Access</button>
+                                                    <p style="color:green"><b>Permission</b></p>
                                                 @endif
                                                 
                                             </td>
@@ -114,7 +116,6 @@ use App\Http\Controllers\CommonController;
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        {{-- <input type="text" id="admin_id" name="admin_id" value="{{ $permision_link->admin_id }}"> --}}
                         <div id="modal_data"></div>
                     </div>
                     <div class="modal-footer">
@@ -147,7 +148,7 @@ use App\Http\Controllers\CommonController;
         var data = '';
         $.each(arr , function (index, value) {
             data += '<b>'+value['nm']+'</b>';
-            if (value['per'] != "") {
+            if (value['per'] == "G") {
                 data += '<input name="'+value['nm']+'" type="checkbox" value="'+value['per']+'" checked>';
             }
             else{

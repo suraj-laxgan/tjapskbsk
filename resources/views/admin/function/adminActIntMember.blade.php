@@ -27,6 +27,9 @@
                                         <!-- <label>Member Name:</label>&nbsp;<font color="#FF0000">*</font> -->
                                         <select name="media_nm_1" id="media_nm_1" class="form-controls">
                                             <option value="">Select Media Name</option>
+                                            @foreach($media_na as $media)
+                                                <option value="{{$media->media_nm}}">{{$media->media_nm}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-2" >
@@ -57,8 +60,9 @@
                                     <!-- <a href="{{url('#')}}"><button type='button' class='blue_button'>Export To Excel</button></a> -->
                                 </div>
                                 <div class="col-sm-6" style='text-align: right'>
-                                    <a href="{{url('#')}}"><button type='button' class='button22'>Export To Excel</button></a>
-                                    <a href="{{url('#')}}"><button type='button' class='button22'>Export To Pdf</button></a>
+                                    <a href="{{route('activeInactiveExcel',['memo_no_1'=>request('memo_no_1'),'mem_nm_1'=>request('mem_nm_1'),'media_nm_1'=>request('media_nm_1'),'mem_stat_1'=>request('mem_stat_1')])}}"><button type='button' class='button22'>Export To Excel</button></a>
+
+                                    <a href="{{route('pdf.activeInactive',['memo_no_1'=>request('memo_no_1'),'mem_nm_1'=>request('mem_nm_1'),'media_nm_1'=>request('media_nm_1'),'mem_stat_1'=>request('mem_stat_1')])}}" target="blank"><button type='button' class='button22'>Export To Pdf</button></a>
                                 </div>
                             </div>
                         </div>
