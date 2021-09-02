@@ -279,10 +279,10 @@ class AdminMemberController extends Controller
         {
             
             $state_id =  $r->state_id;
-           
+            // dd( $state_id);
             $district_nm = DB::table('district_mast')->where('state_id',$state_id)
                 ->orderBy('district_nm')->get();
-                // dd( $dis); 
+                // dd( $district_nm); 
             return $district_nm;
         }
     }

@@ -118,7 +118,7 @@ use App\Http\Controllers\CommonController;
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('admin.dashboard') }}" style="text-decoration:none" class="ad_left_menu {{ request()->is('admin/dashboard') ? 'ad_active_manu':'' }}">
-                                        <i class="fas fa-user"></i>Main
+                                        <i class="fas fa-home"></i>Main
                                     </a>
                                 </td>
                             </tr>
@@ -169,6 +169,21 @@ use App\Http\Controllers\CommonController;
                                 </td>
                             </tr>
                             @endif
+                            {{-- <tr>
+                                <td valign="middle">
+                                    <a href="{{ url('#') }}" style=" text-decoration:none;" class="ad_left_menu ">
+                                        <i class="fas fa-user"></i>New Application
+                                    </a>
+                                </td>
+                            </tr> --}}
+                            <tr>
+                                <td valign="middle">
+                                    <a href="{{ route('add.allRegis') }}" style="text-decoration:none" 
+                                    class="ad_left_menu {{ request()->is('verify-all-regis')||request()->is('verify-register') || request()->is('verify-search-exis-mem')? 'ad_active_manu':'' }}">
+                                        <i class="fas fa-registered"></i>Verified Register
+                                    </a>
+                                </td>
+                            </tr>
                             {{-- <tr>
                                 <td valign="middle">
                                     <a href="{{ url('#',['menu_status' => 'TES']) }}" style="text-decoration:none" class="ad_left_menu {{ (request('menu_status') == 'TES') ? 'ad_active_manu':'' }}">

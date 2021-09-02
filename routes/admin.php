@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\AdminStateController;
 use App\Http\Controllers\Admin\AdminMemberController;
 use App\Http\Controllers\Admin\AdminMasterEntryController;
 use App\Http\Controllers\Admin\AdminFunctionController;
+use App\Http\Controllers\Admin\verifyRegisterController;
+
 
 
 use App\Http\Controllers\Admin\AdminMailController;
@@ -237,6 +239,17 @@ Route::get('send-mail-jh/{id}', [AdminMailController::class,'mailSendJh'])->name
 Route::get('pdf/{id}', [AdminMailController::class, 'previewPrintJk'])->name('pdf.preview');
 Route::get('pdf-generate', [AdminMailController::class, 'generateJkPDF'])->name('pdf.generate');
 Route::get('excel-jk', [AdminMailController::class, 'jkExcel'])->name('excel.jk');
+
+// Verified Register
+Route::get('verify-all-regis',[verifyRegisterController::class,'allRegis'])->name('add.allRegis');
+Route::get('verify-register',[verifyRegisterController::class,'verifyRegister'])->name('add.veRegis');
+Route::get('/verify-mem-edit/{id}',[verifyRegisterController::class,'verifyMemEdit'])->name('ad.vrmem-edit');
+Route::post('/verify-mem-edit-upload',[verifyRegisterController::class,'verifyMemUpload'])->name('ad.verifyupload');
+Route::get('verify-search-exis-mem',[verifyRegisterController::class,'exisMember'])->name('add.exMem');
+Route::get('ad-verify-regis-member',[verifyRegisterController::class,'addVerifyMember'])->name('ad.verifymember');
+Route::post('/ad-verify-member-regis',[verifyRegisterController::class,'addVerifyMemberRegis'])->name('ad.addmemberregis');
+Route::post('/verify-designation-name',[verifyRegisterController::class ,'findDesignationName'])->name('admin.designationname');
+Route::get('verified-pdf', [verifyRegisterController::class, 'verifiedPDF'])->name('pdf.verified');
 
 
 
