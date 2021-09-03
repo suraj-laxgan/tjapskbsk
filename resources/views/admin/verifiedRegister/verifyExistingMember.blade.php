@@ -119,7 +119,7 @@
                     <td>{{ $appli->mem_posting_place }}</td>
                     <td>{{ $appli->state_nm }}</td>
                     <td>
-                        <a href="">Edit</a>
+                         <a href="{{ route('verified.edit',[ $appli->kbsk_id  ]) }}">Edit</a>
                     </td>
                     
                 </tr>

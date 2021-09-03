@@ -250,6 +250,9 @@ Route::get('ad-verify-regis-member',[verifyRegisterController::class,'addVerifyM
 Route::post('/ad-verify-member-regis',[verifyRegisterController::class,'addVerifyMemberRegis'])->name('ad.addmemberregis');
 Route::post('/verify-designation-name',[verifyRegisterController::class ,'findDesignationName'])->name('admin.designationname');
 Route::get('verified-pdf', [verifyRegisterController::class, 'verifiedPDF'])->name('pdf.verified');
+Route::get('ad-verified-edit/{id}',[verifyRegisterController::class,'verifiedEdit'])->name('verified.edit');
+Route::post('/verify-new-edit-upload',[verifyRegisterController::class,'verifyNewMemUpload'])->name('ad.newverifyupload');
+
 
 
 

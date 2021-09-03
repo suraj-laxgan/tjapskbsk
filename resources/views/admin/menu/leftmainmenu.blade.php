@@ -179,7 +179,7 @@ use App\Http\Controllers\CommonController;
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('add.allRegis') }}" style="text-decoration:none" 
-                                    class="ad_left_menu {{ request()->is('verify-all-regis')||request()->is('verify-register') || request()->is('verify-search-exis-mem')? 'ad_active_manu':'' }}">
+                                    class="ad_left_menu {{ request()->is('verify-all-regis')||request()->is('verify-register') || request()->is('verify-search-exis-mem') || request()->is('ad-verify-regis-member') ? 'ad_active_manu':'' }}">
                                         <i class="fas fa-registered"></i>Verified Register
                                     </a>
                                 </td>

@@ -533,4 +533,146 @@ class verifyRegisterController extends Controller
       //  return $pdf->download('E-Verification.pdf');  
         return $pdf->stream('statemember.pdf');
     }
+
+    public function verifiedEdit($id)
+    {
+        // dd($id);
+
+        // $id = request('mem_id');
+        $mem_dist = DB::table('district_mast')
+        ->orderBy('state_id')
+        ->get();
+
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_nm','DESC')
+            ->get();
+
+        // dd( $mem_dist);
+        $mem_edit = DB::table('fcpm_mast_new')->where('kbsk_id', $id)
+            ->select('state_code','state_id','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','district','new_id','kbsk_id')
+            ->first();
+            // $mem_id=request('mem_id');
+            // dd( $mem_id);
+        // dd( $mem_edit);
+        $district_nm = DB::table('district_mast')->where('state_id',$mem_edit->state_id)
+                ->orderBy('district_nm')->get();
+        return view('admin.verifiedRegister.verifyNewExisMemEdit',compact('mem_edit','mem_dist','state_name','district_nm'));
+    }
+
+    public function verifyNewMemUpload(Request $request)
+    {
+        $kbsk_id = $request->kbsk_id;
+        $state_id =$request->state_id;
+        // dd($kbsk_id );
+        
+        // $check_post = DB::table('desig_new_mast')->where('des_type', $request->des_type)
+        //     ->where('des_nm', $request->mem_desig)
+        //     ->where('state_id', $request->state_id)
+        //     ->value('des_no_post');
+        // // dd(  $check_post);
+
+        // $check_fcpm_new = $this->check_fcpm_new($request);
+        // // dd($check_fcpm_new);
+        // // dd($check_post,$check_fcpm_new);
+        // if($check_post > $check_fcpm_new){
+        //     $sl_nos = DB::table('desig_new_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
+        //     //   dd($sl_nos);
+            
+            // $upload = $request->file('profile_pic');
+            // // dd($upload);
+            // $filename =$kbsk_id.'.'. rand(1,99999). '.' . $upload->getClientOriginalExtension();
+            // $upload->move(public_path('photo_kbsk_new'), $filename);
+
+            $pic=DB::table('fcpm_mast_new')->where('kbsk_id',$kbsk_id)->select('kbsk_id','profile_pic')->first();
+
+            if($request->file('profile_pic') != "" && $pic->profile_pic != "")
+            {
+            unlink(public_path('photo_kbsk_new/'.$pic->profile_pic));
+            $upload = $request->file('profile_pic');
+            $filename =$kbsk_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+            $upload->move(public_path('photo_kbsk_new'), $filename);
+
+            }
+            elseif($request->file('profile_pic') != "")
+            {
+                $upload = $request->file('profile_pic');
+                $filename =$kbsk_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+                $upload->move(public_path('photo_kbsk_new'), $filename);
+
+            }
+            
+            elseif($request->file('profile_pic') == "")
+            {
+                $filename = $pic->profile_pic;
+            }
+
+            $pic->profile_pic=$filename;
+            // $pic->save();
+            
+            //head office,distric ofice,
+            if($request->des_type=='HEAD OFFICE')
+            {
+                $mem_posting_place='HEAD OFFICE';
+            }
+            elseif($request->des_type=='DISTRICT OFFICE')
+            {
+                $mem_posting_place=$request->district.' DISTRICT OFFICE';
+            }
+            elseif($request->des_type=='BLOCK OFFICE')
+            {
+                $mem_posting_place=$request->mem_posting_place;
+            }
+            else
+            {
+                $mem_posting_place='';
+            }
+            $fcpm = DB::table('fcpm_mast_new')->where('kbsk_id',$kbsk_id)->select('new_id','state_id','state_nm','state_code','sl_no','memo_no_ref')->first();
+        //    dd( $fcpm->state_id);
+            $mem = DB::table('fcpm_mast_new')
+                ->where('kbsk_id',$kbsk_id)
+                ->update([
+                'kbsk_id' => $kbsk_id,
+                'new_id'=> $fcpm->new_id,
+                'state_id'=> $fcpm->state_id,
+                'state_code'=> $fcpm->state_code,
+                'state_nm'=> $fcpm->state_nm,
+                'kbsk_id'=>$kbsk_id,
+                'memo_no_ref' => $fcpm->memo_no_ref,
+                'mem_nm' => Str::upper($request->mem_nm),
+                'mem_add'=>Str::upper($request->mem_add),
+                'district' => $request->district_nm,
+                'guard_relatiion'=>$request->guard_relatiion,
+                'guard_nm'=>Str::upper($request->guard_nm),
+                'mem_quali'=>Str::upper($request->mem_quali),
+                'contact_no'=>$request->contact_no,
+                'mem_email'=>$request->mem_email,
+                'birth_dt'=>$request->birth_dt,
+                'mem_cast'=>$request->mem_cast,
+                'gender'=>$request->gender,
+                'media_nm'=>Str::upper($request->media_nm),
+                'entry_dt'=>$request->entry_dt,
+                'mem_desig'=>$request->mem_desig,
+                'mem_posting_place'=>$mem_posting_place,
+                'profile_pic'=>$filename,
+                'des_type'=>$request->des_type,
+                'sl_no'=> $fcpm->sl_no,
+                'mem_aadhar_no'=>$request->mem_aadhar_no,
+                'mem_pan_no'=>Str::upper($request->mem_pan_no),
+                'mem_voterid_no'=>Str::upper($request->mem_voterid_no),
+                'bank_acount_no'=>$request->bank_acount_no,
+                'mem_bank_nm'=>Str::upper($request->mem_bank_nm),
+                'bnk_ifsc_code'=>Str::upper($request->bnk_ifsc_code)
+
+            ]);
+           
+            return redirect()->route('add.exMem')->with('msg','Member has been updated successfully');
+        // }
+        // else{
+        //     return redirect()->route('add.exMem')->with('msg','Maximum Designation Limit Reach');
+        // }
+            
+    }
+
 }
