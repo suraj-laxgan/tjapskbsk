@@ -45,7 +45,15 @@
                             @endif
                             <form method="GET" action="{{ url('/ad-member-query') }}"  enctype="multipart/form-data">
                                     <div class="row">
-                                        <div class="col-sm-4" >
+                                        <div class="col-sm-3" >
+                                            <select name="state_id" id="state_n" class="form-controls" >
+                                                <option value="">Select State</option>
+                                                    @foreach($state_name as $sname)
+                                                        <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
+                                                    @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3" >
                                             {{-- {{ $mem_que->mem_stat }} --}}
                                           
                                             <!-- <label>Status  :</label>&nbsp; -->
@@ -55,7 +63,7 @@
                                                     {{-- <option value="D">Inactive</option> --}}
                                                 </select>
                                         </div>
-                                        <div class="col-sm-4" >
+                                        <div class="col-sm-3" >
                                             <!-- <label>Activitis Missing  :</label>&nbsp; -->
                                                 <select name="memo_no" id="memo_no" class="form-controls">
                                                     <option value="">Select Activitis Missing</option>
@@ -74,7 +82,7 @@
                                         <div class="col-sm-1" >
                                             <button type='submit' class='button22' id="search_tn_1"><i class="fa fa-search" style="font-size:20px"></i></button>
                                         </div>
-                                        <div class="col-sm-3" style='margin-left:-30px'  >
+                                        <div class="col-sm-2" style='margin-left:-30px'  >
                                             <!-- <label>&nbsp;&nbsp;</label> -->
                                             <a href="{{url('/ad-member-query')}}">
                                                 <button type="button"class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>

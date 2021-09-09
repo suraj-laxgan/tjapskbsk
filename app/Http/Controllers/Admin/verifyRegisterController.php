@@ -55,21 +55,6 @@ class verifyRegisterController extends Controller
     public function verifyMemEdit($id)
     {
         // dd($id);
-        if (strlen($id) == 1) {
-            $id_a = '0000'.$id;
-        }
-        elseif (strlen($id) == 2) {
-            $id_a = '000'.$id;
-        }
-        elseif (strlen($id) == 3) {
-            $id_a = '00'.$id;
-        }
-        elseif (strlen($id) == 4) {
-            $id_a = '0'.$id;
-        }
-        elseif (strlen($id) == 5) {
-            $id_a = $id;
-        }
 
         // $id = request('mem_id');
         $mem_dist = DB::table('district_mast')
@@ -83,7 +68,7 @@ class verifyRegisterController extends Controller
             ->get();
 
         // dd( $mem_dist);
-        $mem_edit = DB::table('fcpm_mast')->where('mem_id', $id_a)
+        $mem_edit = DB::table('fcpm_mast')->where('mem_id', $id)
             ->select('state_code','state_id','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','memo_no','mem_id','district','new_id')
             ->first();
             // $mem_id=request('mem_id');

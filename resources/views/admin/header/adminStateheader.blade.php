@@ -105,5 +105,13 @@
             <div class="body_circle_icon fa fa-address-card"></div>
             <a href="{{ route('add.CreuserState') }}" class="body_link_text {{ request()->is('ad-cuser-state') ? 'ad_active_manu':'' }} " style="text-decoration:none;">Create State User</a>
         </span>
+        <span style="position:relative;width:150px">
+            <div class="body_circle_icon fa fa-address-card"></div>
+            <a href="{{ route('insert.data') }}" class="body_link_text  " style="text-decoration:none;">Insert Data </a>
+        </span>
+        {{-- <span style="position:relative;width:150px">
+            <div class="body_circle_icon fa fa-address-card"></div>
+            <a href="{{ route('insert.datab') }}" class="body_link_text  " style="text-decoration:none;">Insert Data Bihar</a>
+        </span> --}}
     </div>
 </div> 

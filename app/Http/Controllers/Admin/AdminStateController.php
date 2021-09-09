@@ -10,6 +10,11 @@ use Illuminate\Support\Str;
 use DB;
 use App\Models\StateUsers\StUsers;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Admin\JhApplicant;
+use App\Models\Admin\BrApplicant;
+use App\Models\Admin\wbApplicant;
+
+
 
 
 
@@ -95,7 +100,7 @@ class AdminStateController extends Controller
         $states->state_id=$state_id;
         $states->state_nm = Str::upper($req-> state_nm);
         $states ->state_code = Str::upper($req-> state_code);
-        $states->head_off_nm = $req->head_off_nm;
+        $states->head_off_nm = Str::upper($req-> head_off_nm);
         $states->contact_no = $req->contact_no;
         $states->Banner_one = $filename1;
         $states->Banner_two=$filename2;
@@ -162,7 +167,7 @@ class AdminStateController extends Controller
         $head_off_nm = request('head_off_nm1');
         $contact_no = request('contact_no1');
         $color_nm =  request('color_nm1');
-
+// dd( $request->state_id);
         $Banner_file=State::where('state_id', $request->state_id)->first();
     //   dd($Banner_file);
     if($request->file('Banner_one') != "" && $Banner_file->Banner_one != "")
@@ -294,6 +299,263 @@ class AdminStateController extends Controller
         ]);
        
         return redirect()->route('add.CreuserState')->with('msg','State users has been created successfully');
+    }
+
+    public function InsertData()
+    {
+        $InData= JhApplicant::get();
+        // dd($InData);
+        return view('admin.state.insertData',compact('InData'));
+    
+    }
+
+    public function InsertUPData(Request $request)
+    {
+        // dd('fdsd');
+        JhApplicant::all()->each(function($web) { 
+            $wb = new wbApplicant; 
+            $wb->mem_id = $web->mem_id;
+            $wb->application_no = $web->application_no;
+            $wb->mem_id_old = $web->mem_id_old;
+            $wb->state_id = $web->state_id;
+            $wb->state_code = $web->state_code;
+            $wb->state_nm = $web->state_nm;
+            $wb->mem_nm=Str::upper($web->mem_nm);
+            $wb->mem_add=Str::upper($web->mem_add);
+            $wb->district=$web->district_nm;
+            $wb->guard_relatiion=$web->guard_relatiion;
+            $wb->guard_nm=Str::upper($web->guard_nm);
+            $wb->mem_quali=Str::upper($web->mem_quali);
+            $wb->contact_no=$web->contact_no;
+            $wb->mem_email=$web->mem_email;
+            $wb->birth_dt=$web->birth_dt;
+            $wb->mem_cast=Str::upper($web->mem_cast);
+            $wb->gender=$web->gender;
+            $wb->media_nm=Str::upper($web->media_nm);
+            $wb->memo_no=$web->memo_no;
+            $wb->mem_desig=$web->mem_desig;
+            $wb->entry_dt=$web->entry_dt;
+            $wb->mem_posting_place=$web->mem_posting_place;
+            $wb->profile_pic=$web->profile_pic;
+            $wb->mem_stat=$web->mem_stat;
+            $wb->export_stat=$web->export_stat;
+            $wb->des_type=$web->des_type;
+            $wb->sl_no=$web->sl_nos;
+            $wb->rand_no=$web->rand_no;
+            $wb->memo_id=$web->memo_id;
+            $wb->mem_aadhar_no=$web->mem_aadhar_no;
+            $wb->mem_pan_no=Str::upper($web->mem_pan_no);
+            $wb->mem_voterid_no=Str::upper($web->mem_voterid_no);
+            $wb->bank_acount_no=$web->bank_acount_no;
+            $wb->mem_bank_nm=Str::upper($web->mem_bank_nm);
+            $wb->bnk_ifsc_code=Str::upper($web->bnk_ifsc_code);
+            $wb->mail_stat=$web->mail_stat;
+            $wb->comm_stat=$web->comm_stat;
+            $wb->joi_rand_no=$web->joi_rand_no;
+            $wb->joi_memo_id=$web->joi_memo_id;
+            $wb->add_lane=$web->add_lane;
+            $wb->add_city=$web->add_city;
+            $wb->add_postofc=$web->add_postofc;
+            $wb->add_ps=$web->add_ps;
+            $wb->add_dist=$web->add_dist;
+            $wb->add_pin=$web->add_pin;
+            $wb->post_applied_for=$web->post_applied_for;
+            $wb->reg_status=$web->reg_status;
+            $wb->mem_cast_new=$web->mem_cast_new;
+            $wb->profile_pic_new=$web->profile_pic_new;
+            $wb->mem_aadhar_no_new=$web->mem_aadhar_no_new;
+            $wb->mem_pan_no_new=$web->mem_pan_no_new;
+            $wb->mem_voterid_no_new=$web->mem_voterid_no_new;
+            $wb->add_ps_new=$web->add_ps_new;
+            $wb->add_dist_new=$web->add_dist_new;
+            $wb->add_pin_new=$web->add_pin_new;
+            $wb->pre_add_lane=$web->pre_add_lane;
+            $wb->pre_add_city=$web->pre_add_city;
+            $wb->pre_add_postofc=$web->pre_add_postofc;
+            $wb->pre_add_ps=$web->pre_add_ps;
+            $wb->pre_add_dist=$web->pre_add_dist;
+            $wb->pre_add_pin=$web->pre_add_pin;
+            $wb->sign_image=$web->sign_image;
+            $wb->mem_age=$web->mem_age;
+            $wb->mem_exam_1=$web->mem_exam_1;
+            $wb->mem_exam_pass_1=$web->mem_exam_pass_1;
+            $wb->mem_exam_div_1=$web->mem_exam_div_1;
+            $wb->mem_exam_percent_1=$web->mem_exam_percent_1;
+            $wb->mem_exam_2=$web->mem_exam_2;
+            $wb->mem_exam_pass_2=$web->mem_exam_pass_2;
+            $wb->mem_exam_div_2=$web->mem_exam_div_2;
+            $wb->mem_exam_percent_2=$web->mem_exam_percent_2;
+            $wb->mem_exam_3=$web->mem_exam_3;
+            $wb->mem_exam_pass_3=$web->mem_exam_pass_3;
+            $wb->mem_exam_div_3=$web->mem_exam_div_3;
+            $wb->mem_exam_percent_3=$web->mem_exam_percent_3;
+            $wb->mem_exam_4=$web->mem_exam_4;
+            $wb->mem_exam_pass_4=$web->mem_exam_pass_4;
+            $wb->mem_exam_div_4=$web->mem_exam_div_4;
+            $wb->mem_exam_percent_4=$web->mem_exam_percent_4;
+            $wb->mem_exam_5=$web->mem_exam_5;
+            $wb->mem_exam_pass_5=$web->mem_exam_pass_5;
+            $wb->mem_exam_div_5=$web->mem_exam_div_5;
+            $wb->mem_exam_percent_5=$web->mem_exam_percent_5;
+            $wb->mem_exam_6=$web->mem_exam_6;
+            $wb->mem_exam_pass_6=$web->mem_exam_pass_6;
+            $wb->mem_exam_div_6=$web->mem_exam_div_6;
+            $wb->mem_exam_percent_6=$web->mem_exam_percent_6;
+            $wb->driver_post=$web->driver_post;
+            $wb->driver_licence_no=$web->driver_licence_no;
+            $wb->driver_licence_cat=$web->driver_licence_cat;
+            $wb->driver_exp=$web->driver_exp;
+            $wb->comp_quali=$web->comp_quali;
+            $wb->lang_known=$web->lang_known;
+            $wb->mem_exp=$web->mem_exp;
+            $wb->name_of_the_board_1=$web->name_of_the_board_1;
+            $wb->name_of_the_board_2=$web->name_of_the_board_2;
+            $wb->name_of_the_board_3=$web->name_of_the_board_3;
+            $wb->name_of_the_board_4=$web->name_of_the_board_4;
+            $wb->name_of_the_board_5=$web->name_of_the_board_5;
+            $wb->name_of_the_board_6=$web->name_of_the_board_6;
+            $wb->add_lane_new=$web->add_lane_new;
+            $wb->add_city_new=$web->add_city_new;
+            $wb->add_postofc_new=$web->add_postofc_new;
+            $wb->select_stat=$web->select_stat;
+            $wb->dec_memo_id=$web->dec_memo_id;
+            $wb->dec_rand_no=$web->dec_rand_no;
+            $wb->app_memo_id=$web->app_memo_id;
+            $wb->app_rand_no=$web->app_rand_no;
+            // $wb->state_nm=$web->state_name;
+            $wb->mail_count=$web->mail_count;
+            $wb->save();
+        });
+        return redirect()->route('insert.data')->with('msg','Import complited successfully');
+    }
+    
+    
+    public function InsertDataBihar()
+    {
+        $InData= BrApplicant::get();
+        // dd($InData);
+        return view('admin.state.insertData',compact('InData'));
+    
+    }
+    public function InsertUPDataBr(Request $request)
+    {
+        // dd('sp');
+        BrApplicant::all()->each(function($web) { 
+            $br = new wbApplicant; 
+            $br->mem_id = $web->mem_id;
+            $br->application_no = $web->application_no;
+            $br->mem_id_old = $web->mem_id_old;
+            $br->state_id = $web->state_id;
+            $br->state_code = $web->state_code;
+            $br->state_nm = $web->state_nm;
+            $br->mem_nm=Str::upper($web->mem_nm);
+            $br->mem_add=Str::upper($web->mem_add);
+            $br->district=$web->district_nm;
+            $br->guard_relatiion=$web->guard_relatiion;
+            $br->guard_nm=Str::upper($web->guard_nm);
+            $br->mem_quali=Str::upper($web->mem_quali);
+            $br->contact_no=$web->contact_no;
+            $br->mem_email=$web->mem_email;
+            $br->birth_dt=$web->birth_dt;
+            $br->mem_cast=Str::upper($web->mem_cast);
+            $br->gender=$web->gender;
+            $br->media_nm=Str::upper($web->media_nm);
+            $br->memo_no=$web->memo_no;
+            $br->mem_desig=$web->mem_desig;
+            $br->entry_dt=$web->entry_dt;
+            $br->mem_posting_place=$web->mem_posting_place;
+            $br->profile_pic=$web->profile_pic;
+            $br->mem_stat=$web->mem_stat;
+            $br->export_stat=$web->export_stat;
+            $br->des_type=$web->des_type;
+            $br->sl_no=$web->sl_nos;
+            $br->rand_no=$web->rand_no;
+            $br->memo_id=$web->memo_id;
+            $br->mem_aadhar_no=$web->mem_aadhar_no;
+            $br->mem_pan_no=Str::upper($web->mem_pan_no);
+            $br->mem_voterid_no=Str::upper($web->mem_voterid_no);
+            $br->bank_acount_no=$web->bank_acount_no;
+            $br->mem_bank_nm=Str::upper($web->mem_bank_nm);
+            $br->bnk_ifsc_code=Str::upper($web->bnk_ifsc_code);
+            $br->mail_stat=$web->mail_stat;
+            $br->comm_stat=$web->comm_stat;
+            $br->joi_rand_no=$web->joi_rand_no;
+            $br->joi_memo_id=$web->joi_memo_id;
+            $br->add_lane=$web->add_lane;
+            $br->add_city=$web->add_city;
+            $br->add_postofc=$web->add_postofc;
+            $br->add_ps=$web->add_ps;
+            $br->add_dist=$web->add_dist;
+            $br->add_pin=$web->add_pin;
+            $br->post_applied_for=$web->post_applied_for;
+            $br->reg_status=$web->reg_status;
+            $br->mem_cast_new=$web->mem_cast_new;
+            $br->profile_pic_new=$web->profile_pic_new;
+            $br->mem_aadhar_no_new=$web->mem_aadhar_no_new;
+            $br->mem_pan_no_new=$web->mem_pan_no_new;
+            $br->mem_voterid_no_new=$web->mem_voterid_no_new;
+            $br->add_ps_new=$web->add_ps_new;
+            $br->add_dist_new=$web->add_dist_new;
+            $br->add_pin_new=$web->add_pin_new;
+            $br->pre_add_lane=$web->pre_add_lane;
+            $br->pre_add_city=$web->pre_add_city;
+            $br->pre_add_postofc=$web->pre_add_postofc;
+            $br->pre_add_ps=$web->pre_add_ps;
+            $br->pre_add_dist=$web->pre_add_dist;
+            $br->pre_add_pin=$web->pre_add_pin;
+            $br->sign_image=$web->sign_image;
+            $br->mem_age=$web->mem_age;
+            $br->mem_exam_1=$web->mem_exam_1;
+            $br->mem_exam_pass_1=$web->mem_exam_pass_1;
+            $br->mem_exam_div_1=$web->mem_exam_div_1;
+            $br->mem_exam_percent_1=$web->mem_exam_percent_1;
+            $br->mem_exam_2=$web->mem_exam_2;
+            $br->mem_exam_pass_2=$web->mem_exam_pass_2;
+            $br->mem_exam_div_2=$web->mem_exam_div_2;
+            $br->mem_exam_percent_2=$web->mem_exam_percent_2;
+            $br->mem_exam_3=$web->mem_exam_3;
+            $br->mem_exam_pass_3=$web->mem_exam_pass_3;
+            $br->mem_exam_div_3=$web->mem_exam_div_3;
+            $br->mem_exam_percent_3=$web->mem_exam_percent_3;
+            $br->mem_exam_4=$web->mem_exam_4;
+            $br->mem_exam_pass_4=$web->mem_exam_pass_4;
+            $br->mem_exam_div_4=$web->mem_exam_div_4;
+            $br->mem_exam_percent_4=$web->mem_exam_percent_4;
+            $br->mem_exam_5=$web->mem_exam_5;
+            $br->mem_exam_pass_5=$web->mem_exam_pass_5;
+            $br->mem_exam_div_5=$web->mem_exam_div_5;
+            $br->mem_exam_percent_5=$web->mem_exam_percent_5;
+            $br->mem_exam_6=$web->mem_exam_6;
+            $br->mem_exam_pass_6=$web->mem_exam_pass_6;
+            $br->mem_exam_div_6=$web->mem_exam_div_6;
+            $br->mem_exam_percent_6=$web->mem_exam_percent_6;
+            $br->driver_post=$web->driver_post;
+            $br->driver_licence_no=$web->driver_licence_no;
+            $br->driver_licence_cat=$web->driver_licence_cat;
+            $br->driver_exp=$web->driver_exp;
+            $br->comp_quali=$web->comp_quali;
+            $br->lang_known=$web->lang_known;
+            $br->mem_exp=$web->mem_exp;
+            $br->name_of_the_board_1=$web->name_of_the_board_1;
+            $br->name_of_the_board_2=$web->name_of_the_board_2;
+            $br->name_of_the_board_3=$web->name_of_the_board_3;
+            $br->name_of_the_board_4=$web->name_of_the_board_4;
+            $br->name_of_the_board_5=$web->name_of_the_board_5;
+            $br->name_of_the_board_6=$web->name_of_the_board_6;
+            $br->add_lane_new=$web->add_lane_new;
+            $br->add_city_new=$web->add_city_new;
+            $br->add_postofc_new=$web->add_postofc_new;
+            $br->select_stat=$web->select_stat;
+            $br->dec_memo_id=$web->dec_memo_id;
+            $br->dec_rand_no=$web->dec_rand_no;
+            $br->app_memo_id=$web->app_memo_id;
+            $br->app_rand_no=$web->app_rand_no;
+            // $br->state_nm=$web->state_name;
+            $br->mail_count=$web->mail_count;
+            $br->save();
+           
+        });
+        return redirect()->route('insert.data')->with('msg','Import complited successfully');
     }
 }
 

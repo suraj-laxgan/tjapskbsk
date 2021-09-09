@@ -94,6 +94,7 @@ use App\Http\Controllers\CommonController;
                                         <input type="hidden" id="master_per{{ $grs->admin_id }}" value="{{ $permision_link->master_per }}">
                                         <input type="hidden" id="mail_per{{ $grs->admin_id }}" value="{{ $permision_link->mail_per }}">
                                         <input type="hidden" id="function_per{{ $grs->admin_id }}" value="{{ $permision_link->function_per }}">
+                                        <input type="hidden" id="verfied_register{{ $grs->admin_id }}" value="{{ $permision_link->verfied_register }}">
                                     @endforeach
                                 </table>
                                
@@ -142,8 +143,10 @@ use App\Http\Controllers\CommonController;
         var master_per = $("#master_per"+admin_id).val();
         var mail_per = $("#mail_per"+admin_id).val();
         var function_per = $("#function_per"+admin_id).val();
+        var verfied_register = $("#verfied_register"+admin_id).val();
 
-        var arr = [{'nm':'State','per':state_per},{'nm':'Membership','per':membership_per},{'nm':'Master','per':master_per},{'nm':'Mail','per':mail_per},{'nm':'Function','per':function_per}];
+
+        var arr = [{'nm':'State','per':state_per},{'nm':'Membership','per':membership_per},{'nm':'Master','per':master_per},{'nm':'Mail','per':mail_per},{'nm':'Function','per':function_per},{'nm':'VerifiedRegister','per':verfied_register}];
         console.log(arr);
         var data = '';
         $.each(arr , function (index, value) {

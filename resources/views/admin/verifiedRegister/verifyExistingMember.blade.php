@@ -40,8 +40,9 @@
                         <select name="des_type" id="des_type" class="form-controls" >
                             {{-- <option value="">Select Office</option> --}}
                             <option value="">Select Office</option>
-                            <option value="DISTRICT OFFICE">DISTRICT OFFICE</option>
-                            <option value="BLOCK OFFICE">BLOCK OFFICE</option>
+                            <option value="DISTRICT OFFICE" {{ (request("des_type") == "DISTRICT OFFICE" ? "selected":"") }}>DISTRICT OFFICE</option>
+
+                              <option value="BLOCK OFFICE" {{ (request("des_type") == "BLOCK OFFICE" ? "selected":"") }}>BLOCK OFFICE</option>
                          
                         </select>
                     </div>
@@ -49,7 +50,7 @@
                         <select name="media_nm" id="media_nm" class="form-controls" required>
                             <option value="">Select Media </option>
                             @foreach($media_na as $mname)
-                                <option value="{{$mname->media_nm}}">{{$mname->media_nm}}</option>
+                                <option value="{{$mname->media_nm}}" {{ (request("media_nm") == $mname->media_nm? "selected":"") }}>{{$mname->media_nm}}</option>
                             @endforeach
                             
                         </select>
@@ -59,8 +60,6 @@
                         <label for="register_input" placeholder="Enter Member Name "></label>
 
                     </div>
-                    
-                    
                     
                     <div class="col-sm-2" >
                         <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ request('mem_desig') }}" />

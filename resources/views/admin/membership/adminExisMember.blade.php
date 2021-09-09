@@ -22,8 +22,28 @@
                                
                                 <div class="row">
                                     <div class="col-sm-2" >
+                                        <select name="state_id" id="state_n" class="form-controls" onChange="dkName()" >
+                                            <option value="">Select State</option>
+                                                @foreach($state_name as $sname)
+                                                    <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
+                                                @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2" >
+                                        <select name="district" id="dis_n" class="form-controls" onChange="blockName()">
+                                            <option value="" >Select District</option>
+                                            
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2" >
+                                        <select name="mem_posting_place" id="mem_posting_place" class="form-controls" >
+                                            <option value="">Select Posting Place</option>
+                                            
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2" >
                                         <!-- <label>Select Type :</label>&nbsp; -->
-                                        <select name="des_type" id="des_type" class="form-controls" onChange="findDesignationName()">
+                                        <select name="des_type" id="des_type" class="form-controls">
                                             <option value="">Select Office</option>
                                             <option value="HEAD OFFICE" {{ (request("des_type") == "HEAD OFFICE" ? "selected":"") }}>HEAD OFFICE</option>
 
@@ -34,42 +54,6 @@
                                             <option value="NO OFFICE" {{ (request("des_type") == "NO OFFICE" ? "selected":"") }}>NO OFFICE</option>
                                         </select>
                                     </div>
-                                    <div class="col-sm-2" >
-                                        <select name="district" id="district" class="form-controls">
-                                            <option value="">Select District</option>
-                                            {{-- @foreach($mem_dist as $dist)
-                                                <option value="{{$posting->block_nm}}">{{$dist->district_nm}}</option>
-                                            @endforeach --}}
-
-                                            @foreach ($mem_dist as $dist)
-                                                <option value="{{ $dist->district_nm }}" {{ (request("district") == $dist->district_nm ? "selected":"") }}>
-                                                    {{ $dist->district_nm }}</option>  
-
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-2" >
-                                        <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{request('memo_no')}}"autocomplete="off" />
-                                        <label for="register_input" placeholder="Enter Memo No *"></label>
-                                    </div>
-                                    <div class="col-sm-2" >
-                                        <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ request('mem_nm') }}" autocomplete="off" />
-                                        <label for="register_input" placeholder="Enter Member Name *"></label>
-                                    </div>
-                                    <div class="col-sm-2" >
-                                        <select name="mem_posting_place" id="mem_posting_place" class="form-controls">
-                                            <option value="">Select Posting place</option>
-                                            @foreach($block_name as $posting)
-                                                <option value="{{$posting->block_nm}}"{{ (request("mem_posting_place") == $posting->block_nm ? "selected":"") }}>{{$posting->block_nm}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-2" >
-                                        <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ request('mem_desig') }}" autocomplete="off" />
-                                        <label for="register_input" placeholder="Enter Designation *"></label>
-                                    </div>
-                                </div>
-                                <div class="row" style='margin-top:2px'>
                                     <div class="col-sm-2" >
                                         <select name="media_nm" id="media_nm" class="form-controls">
                                             <option value="">Select Media Name</option>
@@ -82,6 +66,22 @@
                                                 <option value="">Select Media Name</option>
                                             </select> --}}
                                     </div>
+                                    
+                                    <div class="col-sm-2" >
+                                        <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{request('memo_no')}}"autocomplete="off" />
+                                        <label for="register_input" placeholder="Enter Memo No *"></label>
+                                    </div>
+                                </div>
+                                <div class="row" style='margin-top:2px'>
+                                    <div class="col-sm-2" >
+                                        <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ request('mem_nm') }}" autocomplete="off" />
+                                        <label for="register_input" placeholder="Enter Member Name *"></label>
+                                    </div>
+                                    <div class="col-sm-2" >
+                                        <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ request('mem_desig') }}" autocomplete="off" />
+                                        <label for="register_input" placeholder="Enter Designation *"></label>
+                                    </div>
+                                    
                                     <div class="col-sm-2" >
                                         <input type="text" id="guard_nm" class="register_input" name="guard_nm" value="{{ request('guard_nm') }}" autocomplete="off" />
                                         <label for="register_input" placeholder="Enter Guardian name *"></label>
@@ -210,5 +210,59 @@ $(".btn_view").click(function() {
 //    window.open("admin-mem-view?mem_id="+mem_id, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
 });
 
+function dkName()
+        {
+            //  alert('hi');
+             var state_id = $('#state_n').val();
+            //  var dis = $('#dis_n').val();
+            // console.log(state_id);
+            
+            $.ajax({
+            type : 'post',
+            url  : "{{ url('/ajax-find-district-name')}}",
+            data: {'state_id' : state_id,
+                '_token':$('input[name=_token]').val()},   
+            datatype : 'html',
+            success:function(data)
+            {
+                 
+            var district_nm = '<option value="">Select District</option>';
+                $.each( data, function( index, value )
+                {
+                    // console.log(index); 
+                    district_nm += '<option value="'+value.district_nm+'">'+value.district_nm+'</option>';
+                    });
+            $('#dis_n').html(district_nm);
+            //console.log(data)
+            } 
+        });
+        }
+
+        function blockName() {
+            //   alert('hi');
+            var state_id = $('#state_n').val();
+            var district_nm = $('#dis_n').val();
+            // alert(district_nm);
+            $.ajax({
+            type : 'post',
+            url  : "{{ url('/ajax-find-block-name')}}",
+            data: {'state_id' : state_id,
+                    'district_nm' : district_nm,
+                '_token':$('input[name=_token]').val()},   
+            datatype : 'html',
+            success:function(data)
+            {
+                 
+            var block_nm = '<option value="">Select Posting Place</option>';
+                $.each( data, function( index, value )
+                {
+                    // console.log(index); 
+                    block_nm += '<option value="'+value.block_nm+'">'+value.block_nm+'</option>';
+                    });
+            $('#mem_posting_place').html(block_nm);
+            //console.log(data)
+            } 
+        });
+        }
 </script>
 @endpush

@@ -40,11 +40,19 @@
                         <div class="card-body">
                             <form method="GET" action="{{ url('ad-confi-letter') }}"  enctype="multipart/form-data">
                                 <div class="row">
-                                    <div class="col-sm-3" >
+                                    <div class="col-sm-2" >
+                                        <select name="state_id" id="state_n" class="form-controls" onChange="dkName()" >
+                                            <option value="">Select State</option>
+                                                @foreach($state_name as $sname)
+                                                    <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
+                                                @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2" >
                                         <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{ request('memo_no') }}"  />
                                         <label for="register_input" placeholder="Enter Memo No *"></label>
                                     </div>
-                                    <div class="col-sm-3" >
+                                    <div class="col-sm-2" >
                                        
                                         <!-- <label>Print status :</label>&nbsp; -->
                                             <select name="memo_stat" id="memo_stat" class="form-controls">
@@ -58,7 +66,7 @@
                                                
                                             </select>
                                     </div>
-                                    <div class="col-sm-3" >
+                                    <div class="col-sm-2" >
                                         <input type="text" id="memo_id" class="register_input" name="memo_id" value="{{ request('memo_id') }}" />
                                         <label for="register_input" placeholder="Enter Confirmation ID *"></label>
                                     </div>

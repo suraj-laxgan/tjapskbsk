@@ -100,7 +100,7 @@
         </span>
         <span style="position:relative;width:180px">
             <div class="body_circle_icon fa fa-address-book"></div>
-            <a href="{{ route('add.exMem') }}" class="body_link_text {{ request()->is('verify-search-exis-mem') || request()->is('ad-verified-edit/{id}') ? 'ad_active_manu':'' }} " style="text-decoration:none;">Search Existing Member</a>
+            <a href="{{ route('add.exMem') }}" class="body_link_text {{ request()->is('verify-search-exis-mem')  ? 'ad_active_manu':'' }} " style="text-decoration:none;">Search Existing Member</a>
             <!-- <i class="fas fa-ellipsis-v icon_size" style="position:absolute; top:0px; left:0px;"></i> -->
         </span>
         

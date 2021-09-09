@@ -46,6 +46,14 @@
                             <form method="GET" action="{{ url('/ad-expo-member') }}"  enctype="multipart/form-data">
                                     <div class="row">
                                         <div class="col-sm-2" >
+                                            <select name="state_id" id="state_n" class="form-controls" onChange="dkName()" >
+                                                <option value="">Select State</option>
+                                                    @foreach($state_name as $sname)
+                                                        <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
+                                                    @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2" >
                                             <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{ request('memo_no') }}" />
                                             <label for="register_input" placeholder="Enter Memo No "></label>
                                         </div>
@@ -61,7 +69,7 @@
                                             <input type="text" id="mem_desig" class="register_input" name="mem_desig" value="{{ request('mem_desig') }}" />
                                             <label for="register_input" placeholder="Enter Designation "></label>
                                         </div>
-                                        <div class="col-sm-2" >
+                                        {{-- <div class="col-sm-2" >
                                             <!-- <label> Media Name:</label> -->
                                             <select name="media_nm" id="media_nm" class="form-controls">
                                                 <option value="">Select Media Name</option>
@@ -72,7 +80,7 @@
 
                                                 @endforeach
                                             </select>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-sm-1">
                                             <button type='submit' class='button22' id="search_tn_1"><i class="fa fa-search" style="font-size:20px"></i></button>
                                         </div>
@@ -127,7 +135,7 @@
                                     @endforeach
                                  @else 
                                     <tr>
-                                        <td colspan="7" style="text-align:center">No data found !!!</td>
+                                        <td colspan="9" style="text-align:center">No data found !!!</td>
                                     </tr>
                                 @endif
                                 </table>  

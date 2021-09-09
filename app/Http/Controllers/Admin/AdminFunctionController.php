@@ -80,6 +80,7 @@ class AdminFunctionController extends Controller
         $master_per = $request->master_per;
         $mail_per = $request->Mail;
         $function_per = $request->Function;
+        $verfied_register = $request->VerifiedRegister;
         
         $query = DB::table('user_permisiion_mast')->where('admin_id',$admin_id)
             ->update([
@@ -87,7 +88,8 @@ class AdminFunctionController extends Controller
                 'membership_per'=>$membership_per,
                 'master_per'=>$master_per,
                 'mail_per'=>$mail_per,
-                'function_per'=>$function_per
+                'function_per'=>$function_per,
+                'verfied_register' => $verfied_register
             ]);
         return back();    
     }

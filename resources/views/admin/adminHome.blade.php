@@ -52,7 +52,7 @@
 @endsection
 @section('content')
 	<div class="container-fluid">
-					@section('header_link')
+			@section('header_link')
 				Welcome {{ Auth::guard('admin')->user()->admin_user_id }}
 			@endsection
 				<div class="row" style="margin-top:25px;">

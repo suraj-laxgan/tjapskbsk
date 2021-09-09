@@ -51,7 +51,7 @@
                             </select>
                         </div> --}}
                         <div class="col-sm-12" style="margin-top: 5px" > 
-                            <input type="text" id="mem_nm" class="register_input" name="mem_nm" autocomplete="disable" required/>
+                            <input type="text" id="mem_nm" class="register_input" name="mem_nm" autocomplete="disable" />
                             <label for="register_input" placeholder="Enter Members Name  *"></label>
                             @if ($errors->has('mem_nm'))
                             <div class="text-danger">
@@ -60,7 +60,7 @@
                             @endif
                         </div>
                         <div class="col-sm-12">
-                            <input type="text" id="media_nm" class="register_input" name="media_nm"   autocomplete="disable" required />
+                            <input type="text" id="media_nm" class="register_input" name="media_nm"   autocomplete="disable"  />
                             <label for="register_input" placeholder="Enter Media Name  *"></label>
                             @if ($errors->has('media_nm'))
                                 <div class="text-danger">
@@ -77,7 +77,7 @@
                             @endif
                         </div>
                         <div class="col-sm-12" style="padding-top: 5px">
-                            <input type="text" id="contact_no" class="register_input" name="contact_no"  autocomplete="disable" required />
+                            <input type="text" id="contact_no" class="register_input" name="contact_no"  autocomplete="disable"  />
                             <label for="register_input" placeholder="Enter Contact No  *"></label>
                             @if ($errors->has('contact_no'))
                                 <div class="text-danger">
@@ -86,7 +86,7 @@
                             @endif
                         </div>
                         <div class="col-sm-12">
-                            <input type="email" id="mem_email" class="register_input" name="mem_email" autocomplete="off" required/>
+                            <input type="email" id="mem_email" class="register_input" name="mem_email" autocomplete="off" />
                             <label for="register_input" placeholder="Enter Email Address  *"></label>
                             @if ($errors->has('mem_email'))
                                 <div class="text-danger">
@@ -104,7 +104,7 @@
                                     </select>
                             </div>
                             <div class="col-sm-12" style="padding-top: 5px" >
-                                <input type="text" id="guard_nm" class="register_input" name="guard_nm"  autocomplete="disable" required />
+                                <input type="text" id="guard_nm" class="register_input" name="guard_nm"  autocomplete="disable"  />
                                 <label for="register_input" placeholder="Enter Guardian Name *"></label>
                                 @if ($errors->has('guard_nm'))
                                     <div class="text-danger">
@@ -120,7 +120,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-12" style='margin-top:5px' >
-                                <input type="text" id="mem_cast" class="register_input" name="mem_cast" value="{{ old('mem_cast') }}"  autocomplete="off" required/>
+                                <input type="text" id="mem_cast" class="register_input" name="mem_cast" value="{{ old('mem_cast') }}"  autocomplete="off" />
                                 <label for="register_input" placeholder="Enter Cast "></label>
                             </div>
                             <div class="col-sm-12" >
@@ -134,7 +134,7 @@
                                 @endif
                             </div>
                             <div class="col-sm-12" style='margin-top:5px' >
-                                <input type="text" id="mem_quali" class="register_input" name="mem_quali" value="{{ old('mem_quali') }}"  autocomplete="off" required/>
+                                <input type="text" id="mem_quali" class="register_input" name="mem_quali" value="{{ old('mem_quali') }}"  autocomplete="off" />
                                 <label for="register_input" placeholder="Enter Qualification "></label>
                             </div>
                             <div class="col-sm-12">
@@ -148,7 +148,7 @@
                     </div>&nbsp;
                     <div class="card-body"style='border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);'>
                         <div class="col-sm-12" >
-                            <input type="text" id="mem_aadhar_no" class="register_input" name="mem_aadhar_no" value="{{ old('mem_aadhar_no') }}"  autocomplete="off" required/>
+                            <input type="text" id="mem_aadhar_no" class="register_input" name="mem_aadhar_no" value="{{ old('mem_aadhar_no') }}"  autocomplete="off" />
                             <label for="register_input" placeholder="Enter Adhar No*"></label>
                             @if ($errors->has('mem_aadhar_no'))
                                 <div class="text-danger">
@@ -157,7 +157,7 @@
                             @endif
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="mem_pan_no" class="register_input" name="mem_pan_no" value="{{ old('mem_pan_no') }}"  autocomplete="off" required/>
+                            <input type="text" id="mem_pan_no" class="register_input" name="mem_pan_no" value="{{ old('mem_pan_no') }}"  autocomplete="off" />
                             <label for="register_input" placeholder="Enter Pan No *"></label>
                                 @if ($errors->has('mem_pan_no'))
                                     <div class="text-danger">
@@ -166,7 +166,7 @@
                                 @endif
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="mem_voterid_no" class="register_input" name="mem_voterid_no" value="{{ old('mem_voterid_no') }}"  autocomplete="off" required/>
+                            <input type="text" id="mem_voterid_no" class="register_input" name="mem_voterid_no" value="{{ old('mem_voterid_no') }}"  autocomplete="off" />
                             <label for="register_input" placeholder="Enter Voter Id No *"></label>
                                 @if ($errors->has('mem_voterid_no'))
                                     <div class="text-danger">
@@ -175,7 +175,7 @@
                                 @endif
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="bank_acount_no" class="register_input" name="bank_acount_no" value="{{ old('bank_acount_no') }}"  autocomplete="off" required/>
+                            <input type="text" id="bank_acount_no" class="register_input" name="bank_acount_no" value="{{ old('bank_acount_no') }}"  autocomplete="off" />
                             <label for="register_input" placeholder="Enter Bank Account No *"></label>
                             @if ($errors->has('bank_acount_no'))
                                 <div class="text-danger">
@@ -184,7 +184,7 @@
                             @endif
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="mem_bank_nm" class="register_input" name="mem_bank_nm" value="{{ old('mem_bank_nm') }}"  autocomplete="off" required/>
+                            <input type="text" id="mem_bank_nm" class="register_input" name="mem_bank_nm" value="{{ old('mem_bank_nm') }}"  autocomplete="off" />
                             <label for="register_input" placeholder="Enter Bank Name *"></label>
                             @if ($errors->has('mem_bank_nm'))
                                 <div class="text-danger">
@@ -193,7 +193,7 @@
                             @endif
                         </div>
                         <div class="col-sm-12" >
-                            <input type="text" id="bnk_ifsc_code" class="register_input" name="bnk_ifsc_code" value="{{ old('bnk_ifsc_code') }}"  autocomplete="off" required/>
+                            <input type="text" id="bnk_ifsc_code" class="register_input" name="bnk_ifsc_code" value="{{ old('bnk_ifsc_code') }}"  autocomplete="off" />
                             <label for="register_input" placeholder="Enter Bank IFSC Code *"></label>
                             @if ($errors->has('bnk_ifsc_code'))
                                 <div class="text-danger">

@@ -66,6 +66,13 @@ Route::post('/admin-state-edit-upload',[AdminStateController::class,'adminStateE
 Route::get('ad-cuser-state',[AdminStateController::class,'adminCreateStateUser'])->name('add.CreuserState');
 Route::post('ad-cuser-state',[AdminStateController::class,'addCreateStateUser'])->name('add.Createuser');
 
+// @@@@@@@@@@@ It will be Delete after import 
+Route::get('insert-data',[AdminStateController::class,'InsertData'])->name('insert.data');
+Route::any('insert-data-up',[AdminStateController::class,'InsertUPData'])->name('insert.data.up');
+Route::get('insert-data-bihar',[AdminStateController::class,'InsertDataBihar'])->name('insert.datab');
+Route::any('insert-data-up-bi',[AdminStateController::class,'InsertUPDataBr'])->name('insert.data.up.br');
+//   @@@@@@@@@@
+
 
 // ########### Admin State End ##########
 

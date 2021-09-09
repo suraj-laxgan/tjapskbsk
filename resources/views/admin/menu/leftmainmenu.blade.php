@@ -176,6 +176,7 @@ use App\Http\Controllers\CommonController;
                                     </a>
                                 </td>
                             </tr> --}}
+                            @if($permisson_link->verfied_register == "G")
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ route('add.allRegis') }}" style="text-decoration:none" 
@@ -184,6 +185,7 @@ use App\Http\Controllers\CommonController;
                                     </a>
                                 </td>
                             </tr>
+                            @endif
                             {{-- <tr>
                                 <td valign="middle">
                                     <a href="{{ url('#',['menu_status' => 'TES']) }}" style="text-decoration:none" class="ad_left_menu {{ (request('menu_status') == 'TES') ? 'ad_active_manu':'' }}">

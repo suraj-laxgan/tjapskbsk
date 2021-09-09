@@ -19,7 +19,7 @@
                                 <div class="col-sm-3" >
                                     <!-- <label>Select Type :</label>&nbsp;<font color="#FF0000">*</font> -->
                                         <select name="state_nm" id="state_nm" class="form-controls" >
-                                            <option value="">Select State</option>
+                                            <option value="">State</option>
                                             @foreach($state as $sname)
                                             <option value="{{$sname->state_nm}}"{{ request('state_nm')== $sname->state_nm ? "selected":"" }}>{{$sname->state_nm}}</option>
                                         @endforeach
@@ -28,7 +28,7 @@
                                 <div class="col-sm-3" >
                                     <!-- <label>Select Type :</label>&nbsp;<font color="#FF0000">*</font> -->
                                         <select name="des_type" id="des_type" class="form-controls" >
-                                            <option value="">Select Type</option>
+                                            <option value="">Office</option>
                                             <option value="HEAD OFFICE"{{ request('des_type')=='HEAD OFFICE' ? "selected":"" }}>HEAD OFFICE</option>
 
                                             <option value="DISTRICT OFFICE"{{ request('des_type')=="DISTRICT OFFICE" ? "selected":"" }}>DISTRICT OFFICE</option>
@@ -61,7 +61,7 @@
                                 
                                 <div class="col-sm-2" >
                                     <select name="state_id" id="state_n" class="form-controls" required>
-                                        <option value="">Select State</option>
+                                        <option value="">State</option>
                                         @foreach($state as $sname)
                                             <option value="{{$sname->state_id}}">{{$sname->state_nm}}</option>
                                            
@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="col-sm-2" >
                                     <select name="des_type" id="des_type" class="form-controls" required>
-                                        <option value="">Select Type</option>
+                                        <option value="">Office</option>
                                         <option value="HEAD OFFICE">HEAD OFFICE</option>
                                         <option value="DISTRICT OFFICE">DISTRICT OFFICE</option>
                                         <option value="BLOCK OFFICE">BLOCK OFFICE</option>
