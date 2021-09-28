@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\galleryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,23 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
+
+Route::get('/contact-us', function () {
+    return view('contactUs');
+});
+
+Route::get('/about-us', function () {
+    return view('aboutUs');
+});
+Route::get('/message', function () {
+    return view('message');
+});
+Route::get('/ourprogram', function () {
+    return view('ourprogram');
+});
+
+Route::get('gallery',[galleryController::class,'gallShow'])->name('gall');
+
+// Route::get('/gallery', function () {
+//     return view('gallery');
+// });

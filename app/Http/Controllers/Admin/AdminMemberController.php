@@ -1196,9 +1196,14 @@ class AdminMemberController extends Controller
     public function printAddress($id)
     {
         $ma_print = wbApplicant::where('mem_stat','A')
-        ->where('reg_status','!=','new')
-        ->where('mem_id', $id)
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no')
+            ->where('mem_id', $id)
+            ->where(function ($query) {
+                $query->where('reg_status','!=','new')
+                  ->orWhere('reg_status','')
+                  ->orWhereNull('reg_status');
+                })
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt',
+        'mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no')
         ->get();
         return view('admin.membership.adminConLettAddress',compact('ma_print'));
     }
@@ -1212,10 +1217,24 @@ class AdminMemberController extends Controller
     public function adminJoinLetter()
     {
         // $mem_id = request('mem_id');
+        $state_id = request('state_n');
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
-        
-        $query = wbApplicant::where('mem_stat','A');
+       
+        $query  = wbApplicant::where('memo_id','!=','')
+        ->where(function ($query) {
+            $query->where('reg_status','!=','new')
+                ->orWhere('reg_status','')
+                ->orWhereNull('reg_status');
+        })
+        ->whereNotNull('memo_no');
+        if($state_id != '')
+        {
+        $query = $query->where('state_id', 'like', '%' . $state_id . '%');
+        // dd( $state_id);
+
+        }
+
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1227,18 +1246,6 @@ class AdminMemberController extends Controller
             $query = $query->where('mem_nm', 'like', '%' . $mem_nm . '%');
         }
         
-        $query  = wbApplicant::where('memo_id','!=','')
-            ->where(function ($query) {
-                $query->where('reg_status','!=','new')
-                    ->orWhere('reg_status','')
-                    ->orWhereNull('reg_status');
-            })
-            ->whereNotNull('memo_no');
-
-        // $query = $query->where('reg_status','!=','new')->where('memo_id','!=','');
-        // // ->whereNull('joi_memo_id')
-        // $query = $query->orWhere('joi_memo_id','') ->whereNull('joi_memo_id');
-
         $query = $query->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id');
 
         $join_lt=  $query->paginate(100);
@@ -1250,9 +1257,13 @@ class AdminMemberController extends Controller
         //     'memo_no' => $memo_no,
         //     'mem_nm' => $mem_nm
         // ]);
-      
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
+            ->get();
         
-        return view ('admin.membership.adminJoinLetter',compact('join_lt','join_lt_total',));
+        return view ('admin.membership.adminJoinLetter',compact('join_lt','join_lt_total','state_name'));
     }
 
     public function joinPrint(Request $request, $id)
@@ -1353,7 +1364,7 @@ class AdminMemberController extends Controller
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
         $joi_memo_id = request('joi_memo_id');
-
+        $state_id = request('state_n');
         // dd($joi_memo_id);
 
         
@@ -1368,6 +1379,11 @@ class AdminMemberController extends Controller
                   ->orWhereNull('reg_status');
         })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no',);
+        if($state_id != '')
+        {
+        $query = $query->where('state_id', 'like', '%' . $state_id . '%');
+        }
+
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1388,7 +1404,13 @@ class AdminMemberController extends Controller
 
        
         // dd($re_join_lt_total );
-        return view ('admin.membership.adminRePrintJoinLetter',compact('re_print_join','re_join_lt_total'));
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
+            ->get();
+
+        return view ('admin.membership.adminRePrintJoinLetter',compact('state_name','re_print_join','re_join_lt_total'));
     }
     public function joinLetExcel()
     {
@@ -1438,6 +1460,7 @@ class AdminMemberController extends Controller
     {
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
+        $state_id = request('state_n');
         
         // $query = wbApplicant::where('mem_stat','A')
         // ->where('reg_status','!=','new')
@@ -1451,6 +1474,11 @@ class AdminMemberController extends Controller
                     ->orWhereNull('reg_status');
             })
             ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id',);
+        if($state_id != '')
+        {
+        $query = $query->where('state_id', 'like', '%' . $state_id . '%');
+        }
+
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1465,7 +1493,13 @@ class AdminMemberController extends Controller
         $dec_ltr=  $query->paginate(100);
         $dec_lt_total= count($dec_ltr);
         // dd( $dec_lt_total);
-        return view ('admin.membership.adminDeclarationLetter',compact('dec_ltr','dec_lt_total'));
+
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
+            ->get();
+        return view ('admin.membership.adminDeclarationLetter',compact('dec_ltr','dec_lt_total','state_name'));
     }
 
     public function declPrint(Request $request,$id)
@@ -1564,6 +1598,7 @@ class AdminMemberController extends Controller
     {
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
+        $state_id = request('state_n');
 
         // $query = wbApplicant::where('mem_stat','A')
         // ->where('reg_status','!=','new')
@@ -1580,6 +1615,11 @@ class AdminMemberController extends Controller
             })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no');
 
+        if($state_id != '')
+        {
+        $query = $query->where('state_id', 'like', '%' . $state_id . '%');
+        }
+
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1593,7 +1633,13 @@ class AdminMemberController extends Controller
 
         $dec_re_print=  $query->paginate(100);
         $dec_re_print_total= count($dec_re_print);
-        return view ('admin.membership.adminReprintDeclarationLetter',compact('dec_re_print','dec_re_print_total'));
+
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
+            ->get();
+        return view ('admin.membership.adminReprintDeclarationLetter',compact('state_name','dec_re_print','dec_re_print_total'));
     }
 
     public function decRePrintCom($id)
@@ -1632,6 +1678,8 @@ class AdminMemberController extends Controller
     {
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
+        $state_id = request('state_n');
+
         
         // $query = wbApplicant::where('mem_stat','A')
         // ->where('reg_status','!=','new')
@@ -1645,6 +1693,11 @@ class AdminMemberController extends Controller
             ->orWhereNull('reg_status');
         })
         ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion',   'guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','rand_no','joi_memo_id','joi_rand_no','dec_memo_id','app_memo_id','app_rand_no');
+        if($state_id != '')
+        {
+        $query = $query->where('state_id', 'like', '%' . $state_id . '%');
+        }
+
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1659,7 +1712,13 @@ class AdminMemberController extends Controller
         $app_ltr=  $query->paginate(100);
         $app_lt_total= count($app_ltr);
         // dd( $app_lt_total);
-        return view ('admin.membership.adminAppointmentLetter',compact('app_ltr','app_lt_total'));
+
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
+            ->get();
+        return view ('admin.membership.adminAppointmentLetter',compact('app_ltr','app_lt_total','state_name'));
     }
 
     public function appltrPrint(Request $request,$id)
@@ -1756,6 +1815,7 @@ class AdminMemberController extends Controller
     {
         $memo_no = request('memo_no');
         $mem_nm = request('mem_nm');
+        $state_id = request('state_n');
 
         // $query = wbApplicant::where('mem_stat','A')
         // ->where('reg_status','!=','new')
@@ -1772,6 +1832,11 @@ class AdminMemberController extends Controller
             })
             ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','media_nm','memo_no','entry_dt','mem_desig','mem_posting_place','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','dec_memo_id','dec_rand_no','app_memo_id','state_nm');
         // ->first();
+        if($state_id != '')
+        {
+        $query = $query->where('state_id', 'like', '%' . $state_id . '%');
+        }
+
         if($memo_no != '')
         {
         $query = $query->where('memo_no', 'like', '%' . $memo_no . '%');
@@ -1786,7 +1851,12 @@ class AdminMemberController extends Controller
         $app_ltr=  $query->paginate(100);
         $app_lt_total= count($app_ltr);
 
-        return view ('admin.membership.adminReprintAppointmentLetter',compact('app_ltr','app_lt_total'));
+        $state_name = DB::table('state_mast')
+        // ->where('state_code','!=','')
+            ->select('state_nm','state_code','state_id')
+            ->orderBy('state_id','ASC')
+            ->get();
+        return view ('admin.membership.adminReprintAppointmentLetter',compact('state_name','app_ltr','app_lt_total'));
     }
 
     public function appRePrintCom($id)

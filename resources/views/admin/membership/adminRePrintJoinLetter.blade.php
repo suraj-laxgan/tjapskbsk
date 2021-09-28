@@ -40,16 +40,24 @@
                         <div class="card-body" >
                             {{-- <form method="GET" action="{{ url('#') }}"  enctype="multipart/form-data"> --}}
                                 <div class="row">
-                                    <div class="col-sm-3" >
+                                    <div class="col-sm-2" >
+                                            <select name="state_id" id="state_n" class="form-controls" onChange="dkName()" >
+                                                <option value="">Select State</option>
+                                                    @foreach($state_name as $sname)
+                                                        <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
+                                                    @endforeach
+                                            </select>
+                                        </div>
+                                    <div class="col-sm-2" >
                                         <input type="text" id="memo_no" class="register_input" name="memo_no"  value="{{ request('memo_no') }}" />
                                         <label for="register_input" placeholder="Enter Memo No *"></label>
                                     </div>
-                                    <div class="col-sm-3" >
+                                    <div class="col-sm-2" >
                                         <input type="text" id="mem_nm" class="register_input" name="mem_nm"  value="{{ request('mem_nm') }}" />
                                         <label for="register_input" placeholder="Enter Name *"></label>
                                     </div>
                                    
-                                    <div class="col-sm-3" >
+                                    <div class="col-sm-2" >
                                         <input type="text" id="joi_memo_id" class="register_input" name="joi_memo_id"  value="{{ request('joi_memo_id') }}" />
                                         <label for="register_input" placeholder="Enter joining Id *"></label>
                                     </div>
@@ -123,10 +131,11 @@
 @push('scripts')
 <script>
     $("#search_tn_1").click(function() { 
+        var state_n =  $("#state_n").val();
        var memo_no =  $("#memo_no").val();
        var mem_nm =  $("#mem_nm").val();
        var joi_memo_id = $("#joi_memo_id").val();
-       window.location.href = "ad-repjoining-letter?memo_no="+memo_no+"&mem_nm="+mem_nm+"&joi_memo_id="+joi_memo_id;
+       window.location.href = "ad-repjoining-letter?memo_no="+memo_no+"&mem_nm="+mem_nm+"&joi_memo_id="+joi_memo_id+"&state_n="+state_n;
     });  
     
     $(".join_print").click(function() {

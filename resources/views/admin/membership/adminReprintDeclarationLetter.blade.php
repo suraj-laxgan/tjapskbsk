@@ -38,27 +38,32 @@
                     <td width="0%">&nbsp;</td>
                     <td width="100%">
                     <div class="card-body">
-                        {{-- <form method="GET" action="{{ url('#') }}"  enctype="multipart/form-data"> --}}
-                            {{-- @csrf  --}}
                                 <div class="row">
-                                    <div class="col-sm-4" >
+                                    <div class="col-sm-3" >
+                                        <select name="state_id" id="state_n" class="form-controls" onChange="dkName()" >
+                                            <option value="">Select State</option>
+                                                @foreach($state_name as $sname)
+                                                    <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
+                                                @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3" >
                                         <input type="text" id="memo_no" class="register_input" name="memo_no" value="{{ request('memo_no') }}" />
                                         <label for="register_input" placeholder="Enter Memo No *"></label>
                                     </div>
-                                    <div class="col-sm-4" >
+                                    <div class="col-sm-3" >
                                         <input type="text" id="mem_nm" class="register_input" name="mem_nm" value="{{ request('mem_nm') }}" />
                                         <label for="register_input" placeholder="Enter Name *"></label>
                                     </div>
                                     <div class="col-sm-1" >
                                         <button type='submit' class='button22' id="search_tn_1"><i class="fa fa-search" style="font-size:20px"></i></button>
                                     </div>
-                                    <div class="col-sm-3" style='margin-left:-40px'  >
+                                    <div class="col-sm-2" style='margin-left:-40px'  >
                                         <a href="{{url('ad-reprindecal-letter')}}">
                                             <button class='button22'> <i class="fa fa-refresh" style="font-size:20px"></i></button>
                                         </a>    
                                     </div>
                                 </div>
-                        {{-- </form >  --}}
                     </div>
                     <div class="card-body" style='margin-top:-30px'>
                         <!-- <div style="text-align:center;color:gray"> <h6>View Reprint Declaration Letter :</h6></div> -->
@@ -101,7 +106,9 @@
     $("#search_tn_1").click(function() { 
     var memo_no =  $("#memo_no").val();
     var mem_nm =  $("#mem_nm").val();
-    window.location.href = "ad-reprindecal-letter?memo_no="+memo_no+"&mem_nm="+mem_nm;
+    var state_n =  $("#state_n").val();
+
+    window.location.href = "ad-reprindecal-letter?memo_no="+memo_no+"&mem_nm="+mem_nm+"&state_n="+state_n;
     });
 
     $(".decrep_print").click(function() {
