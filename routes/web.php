@@ -15,15 +15,7 @@ use App\Http\Controllers\galleryController;
 */
 
 Route::get('/', function () {
-    // return env('DB_DATABASE');
     return view('welcome');
-    // return "helo laravel"; 
-    // return ['hi','fi','ji'];
-    // return  response()->json([
-    //     'name'=>'ram',
-    //     'kam'=>'jam'
-    // ]);
-    // return redirect('/');
 });
 
 Route::get('/dashboard', function () {
@@ -46,8 +38,25 @@ Route::get('/ourprogram', function () {
     return view('ourprogram');
 });
 
-Route::get('gallery',[galleryController::class,'gallShow'])->name('gall');
+// Route::get('/gallery',[galleryController::class,'gallShow'])->name('gall');
+Route::get('/gal',[galleryController::class,'gallShow'])->name('m.gall');
 
-// Route::get('/gallery', function () {
-//     return view('gallery');
+// Route::get('/xxx', function () {
+//     return view('xxx');
 // });
+
+Route::get('/twenty-point', function () {
+    return view('twentyPoint');
+});
+Route::get('/safe-drive', function () {
+    return view('safeDriveSaveLife');
+});
+Route::get('/kanyashree', function () {
+    return view('kanyashree');
+});
+Route::get('/beti-bachao-beti-padhao', function () {
+    return view('betiBachao');
+});
+Route::get('/more-video', function () {
+    return view('videoGallery');
+});

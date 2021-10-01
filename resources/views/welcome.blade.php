@@ -48,6 +48,7 @@
 .slide:nth-child(5) {
   background: url(../public/gallery_photo/p4.jpg) no-repeat center;
   background-size: cover;
+  
 }
 
 .slide-number {
@@ -95,6 +96,64 @@
     margin-left: -4800px;
   }
 }
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+}
+
+.card:hover {
+  box-shadow: 0 16px 32px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+  padding: 2px 16px;
+}
+
+/* right to left text css */
+.animated {
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.animated > * {
+  display: inline-block;
+  position: relative;
+  animation: 10s linear 0s infinite move;
+}
+
+.animated > *.min {
+  min-width: 100%;
+}
+@keyframes move {
+  
+  0% {
+    transform: translateX(30%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+/* top to bottom text css */
+@keyframes movingTopToBottom {
+  0% {
+    bottom: 0px;
+  }
+  100% {
+    bottom: 50px;
+  }
+}
+.cont {
+  height: 100px;
+  overflow: hidden;
+}
+#divTAReviews {
+  animation: movingTopToBottom 5s linear infinite;
+  position: relative;
+  padding: 10px;
+}
 	
 </style>
 @section('meta')
@@ -122,8 +181,62 @@
 	</div>
 </div>
 <!-- End slide show -->
-<div class="container" style="margin-top:-60px">
-	<h2>
+<div class="container" style="margin-top:-60px;">
+    <div class="animated" style="margin-left:70px;color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
+      <h3>We are proud to be a part of these government projects.</h3>
+    </div>
+  <div class="row">
+      <div class="card col-sm-3" style="margin-left:80px">
+        <a href="{{url('twenty-point')}}">
+          <img src="{{ asset('gallery/20pp.png') }}"  style="width:100%">
+        </a>
+      </div>
+      <div class="card col-sm-3" style="margin-left:60px">
+        <a href="{{ url('about-us') }}">
+          <img src="{{ asset('gallery/vision.jpg') }}"  style="width:100%">
+        </a>
+      </div>
+      <!-- <div class="card col-sm-3" style="padding:10px;margin-top:25px;margin-left:60px">
+        <a href="{{url('safe-drive')}}">
+          <img src="{{ asset('gallery/drive1.jpg') }}"  style="width:100%">
+        </a>
+      </div> -->
+      <div class="col-sm-3" style="padding:10px;margin-left:50px;margin-top:-70px">
+         <video width="300"  height="300" controls>
+            <source src="video/video1.mp4" type="video/mp4">
+          </video>
+          <a href="{{url('more-video')}}">More Videos</a>
+      </div>
+     
+  </div>
+  <div class="row" style="margin-top:30px">
+      <div class="card col-sm-3" style="margin-left:80px">
+        <a href="{{url('kanyashree')}}">
+          <img src="{{ asset('gallery/kanyashree1.jpg') }}"  style="width:100%">
+
+        </a>
+      </div>
+      <!-- <div class="card col-sm-3" style="padding:20px;margin-left:60px">
+        <a href="">
+          <img src="{{ asset('gallery/swach1.png') }}"  style="width:100%">
+        </a>
+      </div> -->
+      <div class="card col-sm-3" style="padding:20px;margin-left:60px">
+        <a href="{{url('beti-bachao-beti-padhao')}}">
+        <img src="{{ asset('gallery/beti2.jpg') }}"  style="width:100%">
+        </a>
+      </div>
+      <div class="col-sm-3" style="padding:20px;margin-left:60px;color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
+          <div class="cont">
+              <div id="divTAReviews">
+                <h4>Latest News Display Here</h4> 
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div>
+  <h2>
 		<u>About TJAPSKBSK Organization</u>
 	</h2>
 	<p style="color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
@@ -133,6 +246,9 @@
 	- intentioned strategies vision for the development of strong implementation 20 point programme. We have cherished 
 	also, to make it a Krishi Bikash Shilpa Kendra to none in all respects. 
 	</p>
+  
+  </div>
+	
 </div>
 
 
