@@ -16,7 +16,7 @@
             <div class="container-fluid m-20 mob-none">
             <div class="row">
               <b>
-                <div class="col-sm-8" align="right">
+                <div class="col-sm-7" align="right">
                   <span>
                       <a href="{{ url('/') }}" style="text-decoration:none;">Home</a>
                   </span>
@@ -35,13 +35,16 @@
                   <span style="padding-left:15px;">
                       <a href="{{ url('contact-us') }}" style="text-decoration:none;">Contact Us</a>
                   </span>
+                 
                 </div>
               </b>
-                <div class="col-sm-4">
+                <div class="col-sm-5">
                     <div class='row'>
                       <div class="search-container" style="margin-top:-5px">
-                        <form action="">
-                          <input type="text" placeholder="Search.." name="search">
+                        <form action="{{('search')}}" method="GET">
+                          <input type="text" placeholder="Enter Your Name" name="mem_nm" required>
+                          <input type="text" placeholder="Enter Your Guardian Name" name="guard_nm" required>
+
                           <button type="submit" style=" padding: 5px;cursor: pointer;"><i class="fa fa-search"></i></button>
                        </form>
                       </div>

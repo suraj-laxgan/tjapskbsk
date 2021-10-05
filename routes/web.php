@@ -24,9 +24,6 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::get('/contact-us', function () {
-    return view('contactUs');
-});
 
 Route::get('/about-us', function () {
     return view('aboutUs');
@@ -37,14 +34,7 @@ Route::get('/message', function () {
 Route::get('/ourprogram', function () {
     return view('ourprogram');
 });
-
-// Route::get('/gallery',[galleryController::class,'gallShow'])->name('gall');
 Route::get('/gal',[galleryController::class,'gallShow'])->name('m.gall');
-
-// Route::get('/xxx', function () {
-//     return view('xxx');
-// });
-
 Route::get('/twenty-point', function () {
     return view('twentyPoint');
 });
@@ -60,3 +50,6 @@ Route::get('/beti-bachao-beti-padhao', function () {
 Route::get('/more-video', function () {
     return view('videoGallery');
 });
+Route::get('/contact-us',[galleryController::class,'contactUs'])->name('contact.us');
+Route::post('/contact-us-msg',[galleryController::class,'contactUsMsg'])->name('contact.msg');
+Route::get('/search',[galleryController::class,'searchMem'])->name('search.mem');

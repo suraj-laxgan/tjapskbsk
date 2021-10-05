@@ -139,7 +139,7 @@
 /* top to bottom text css */
 @keyframes movingTopToBottom {
   0% {
-    bottom: 0px;
+    bottom: -100px;
   }
   100% {
     bottom: 50px;
@@ -181,7 +181,7 @@
 	</div>
 </div>
 <!-- End slide show -->
-<div class="container" style="margin-top:-60px;">
+<div class="container" style="margin-top:-80px;">
     <div class="animated" style="margin-left:70px;color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
       <h3>We are proud to be a part of these government projects.</h3>
     </div>
@@ -235,18 +235,34 @@
       </div>
   </div>
 
-  <div>
-  <h2>
-		<u>About TJAPSKBSK Organization</u>
-	</h2>
-	<p style="color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
-	K.B.S.K. completes around 34 years. These 34 years have been the years of spectacular 
-	achievements unprecedented development and progress. Though it was not easy to scale these heights, especially in 
-	the scenario we were offered by our predecessor. Yet we made it possible because of our well-directed and well 
-	- intentioned strategies vision for the development of strong implementation 20 point programme. We have cherished 
-	also, to make it a Krishi Bikash Shilpa Kendra to none in all respects. 
-	</p>
-  
+  <div style="padding:10px;margin-top:30px;color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400; border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);padding-top:30px">
+    <h2>
+      <u>About TJAPSKBSK Organization</u>
+    </h2>
+    <p style="color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
+      K.B.S.K. completes around 34 years. These 34 years have been the years of spectacular 
+      achievements unprecedented development and progress. Though it was not easy to scale these heights, especially in 
+      the scenario we were offered by our predecessor. Yet we made it possible because of our well-directed and well 
+      - intentioned strategies vision for the development of strong implementation 20 point programme. We have cherished 
+      also, to make it a Krishi Bikash Shilpa Kendra to none in all respects. 
+    </p>
+    <p>
+      Our prime concern during all these years had been to provide responsive, corruption free and transparent administration to the people. K.B.S.K. is bound to scale new heights in every sphere of development with team work. 
+      Every bit of grain the hardworking people K.B.S.K. produce by toiling hard, day in day out increase the wounds of Kautlya,
+    “It is the people who constitute a kingdom; like a Barron cow, a kingdom without people yield nothing".
+    </p>
+  </div>
+
+  <div style="padding:10px;margin-top:30px;color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400; border: 1px solid rgb(200,200,200);box-shadow: 0px 0px 5px 0px rgb(200 200 200);padding-top:30px">
+    <h2>
+      <u>Our Programs</u>
+    </h2>
+    <p style="color: #6d6d6d;font-family: roboto,Sans-serif;font-size: 16px;font-weight: 400;">
+      Kirshi Bikash Shilpa Kendra is working in this project Animal Hisbandary is a state of West Bengal since 1991-92 subject and the State Goverment are primarily responsible for the growth of the sector. The Department of Animal Husbandry,
+      the Department has been Implementing 11 Central sector and Centrally Sponsered Schemes for teh development of requiste infrastructure and supplementing the efforts of the State Goverments for achieving the accelerated growth of Animal Husbandry Sector.
+      Following are promoted by the Animal Husbandry Division: Genetic Upgradation: Central Cattle Development Organizations
+      Other Schemes: Sheep Development, Poultry, Piggery, Fodder Development, Live Stock Health. 
+    </p>
   </div>
 	
 </div>

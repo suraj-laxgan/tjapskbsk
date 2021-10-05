@@ -16,7 +16,7 @@
                     <a href="{{ url('/') }}" style="text-decoration:none;">Home</a>
                   </span>
                   <span class="link_pr link_pl">
-                      About Us
+                    <a href="{{ url('/about-us') }}" style="text-decoration:none;"> About Us</a>
                   </span>
                   <span class="link_pl pr-10">
                   <a href="{{ url('contact-us') }}" style="text-decoration:none;">Contact Us</a>
