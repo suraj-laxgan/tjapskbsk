@@ -17,9 +17,11 @@
                     <div class="col-sm-2" >
                         <select name="state_id" id="state_n" class="form-controls" onChange="dkName()" required>
                             <option value="">Select State</option>
+                            <option value="ST0000000001">West Bengal</option>
+                        <!-- <option value="">Select State</option>
                                 @foreach($state_name as $sname)
                                     <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }}>{{$sname->state_nm}}</option>
-                                @endforeach
+                                @endforeach -->
                         </select>
                     </div>
                     <div class="col-sm-2" >

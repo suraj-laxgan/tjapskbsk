@@ -19,6 +19,7 @@ use App\Exports\joiningLetter;
 use Illuminate\Support\Collection;
 use Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class AdminMemberController extends Controller
 {
@@ -790,7 +791,7 @@ class AdminMemberController extends Controller
             if($request->file('profile_pic') != "" && $pic->profile_pic != "")
             {
                 // if(\File::exists(public_path('photo/'.$pic->profile_pic)))
-                if(file_exists(public_path('photo/$pic->profile_pic')))
+                if(File::exists(public_path('photo/'.$pic->profile_pic)) == true)
                 {
                     unlink(public_path('photo/'.$pic->profile_pic));
                 }    
@@ -1737,13 +1738,6 @@ class AdminMemberController extends Controller
 
     public function appltrPrint(Request $request,$id)
     {
-        // $app_print = wbApplicant::where('mem_stat','A')
-        // ->where('reg_status','!=','new')
-        // // ->where('mem_id', $id) 
-        // ->where('mem_id', $id_a) 
-        // ->where('dec_memo_id','!=','')
-        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
-        
         $app_print  = wbApplicant::where('mem_stat','A') 
             ->where('mem_id', $id) 
             ->where('dec_memo_id','!=','') 
@@ -1764,8 +1758,24 @@ class AdminMemberController extends Controller
 
 //    dd($print);
 // dd( $print[0]->print_id);
-   
-    $max_app_memo_id = wbApplicant::orderBy('app_memo_id','desc')->value('app_memo_id');
+   if ($app_print->app_memo_id  != '') {
+        echo "<script type='text/javascript'>
+            alert('Already Printed');
+            window.history.back();
+        </script>";
+   }
+   else {
+        return view('admin.membership.adminAppLetterPrint',compact('app_print'));  
+        }
+    }
+
+    public function appPrintCom($id)
+    {
+        $memo_id = request('memo_id');
+        $print_dt = request('print_dt');
+        // dd($print_dt);
+       
+        $max_app_memo_id = wbApplicant::orderBy('app_memo_id','desc')->value('app_memo_id');
         if($max_app_memo_id =="")
         {
             $app_memo_id = "TJAPSKBSKA/00001/".date('Y');
@@ -1776,29 +1786,12 @@ class AdminMemberController extends Controller
             $last = str_pad($last_memo_id,6,"0",STR_PAD_LEFT);
             $app_memo_id = 'TJAPSKBSKA'.$last.'/'.date('Y');
         }
-        // dd($app_memo_id );
 
         wbApplicant::where('mem_id', $id)
         ->update([
             'app_rand_no' => rand(),
             'app_memo_id' => $app_memo_id
         ]);
-
-        return view('admin.membership.adminAppLetterPrint',compact('app_print'));  
-    }
-
-    public function appPrintCom($id)
-    {
-        $memo_id = request('memo_id');
-        $print_dt = request('print_dt');
-        // dd($print_dt);
-
-        // $app_print = wbApplicant::where('mem_stat','A')
-        // ->where('reg_status','!=','new')
-        // // ->where('mem_id', $id) 
-        // ->where('mem_id', $id_a) 
-        // ->where('dec_memo_id','!=','')
-        // // ->orWhere('joi_memo_id','') ->whereNull('joi_memo_id')
 
         $app_print  = wbApplicant::where('mem_stat','A') 
             ->where('mem_id', $id) 
@@ -1808,8 +1801,8 @@ class AdminMemberController extends Controller
                 ->orWhere('reg_status','')
                 ->orWhereNull('reg_status');
             })
-        ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no')
-        ->first();
+            ->select('mem_id','memo_id','mem_id_old','mem_nm','mem_add','district','guard_relatiion','guard_nm','mem_quali','contact_no','mem_email','birth_dt','mem_cast','gender','media_nm','memo_no','memo_no_old','entry_dt','mem_desig','mem_posting_place','profile_pic','mem_stat','des_type','sl_no','state_code','state_nm','new_id','joi_memo_id','joi_rand_no','dec_memo_id','dec_rand_no','app_memo_id','app_rand_no')
+            ->first();
         
         DB::table('print_letter_mast')->where('memo_id',$memo_id)
         ->update([
@@ -1817,7 +1810,7 @@ class AdminMemberController extends Controller
             'app_memo_id' => $app_print->app_memo_id,
             'app_letter_dt' => $print_dt
         ]);
-
+       
         $print_letter_dtl = DB::table('print_letter_mast')->where('memo_id',$memo_id)
         ->value('app_letter_dt');
         // dd($print_letter_dtl);

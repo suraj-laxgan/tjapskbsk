@@ -26,9 +26,10 @@
                             <div class="col-sm-12" >
                                     <select name="state_id" id="state_n" class="form-controls" onChange="dkName()">
                                         <option value="">Select State *</option>
-                                        @foreach($state_name as $sname)
+                                        <option value="ST0000000001">West Bengal</option>
+                                        <!-- @foreach($state_name as $sname)
                                             <option value="{{$sname->state_id}}">{{$sname->state_nm}}</option>
-                                        @endforeach
+                                        @endforeach -->
                                     </select>
                                     @if ($errors->has('state_nm'))
                                     <div class="text-danger">

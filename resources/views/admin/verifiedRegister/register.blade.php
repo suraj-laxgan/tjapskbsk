@@ -16,10 +16,11 @@
                 <div class="row">
                     <div class="col-sm-4" >
                         <select name="state_id" id="state_id" class="form-controls" required>
-                            <option value="">Select State</option>
-                            @foreach($state_name as $sname)
+                            <option value="">West Bengal</option>
+                            <!-- <option value="">Select State</option> -->
+                            <!-- @foreach($state_name as $sname)
                                 <option value="{{$sname->state_id}}" {{ request('state_id')== $sname->state_id ? "selected":"" }} >{{$sname->state_nm}}</option>
-                            @endforeach
+                            @endforeach -->
                         </select>
                     </div>
                     <div class="col-sm-4" >

@@ -7,7 +7,7 @@
     <title>Document</title>
 	<style>
 		.mail_bg{
-			background-image:url('https://tjapskbsk.in/office/images/logomark7.jpg');
+			background-image:url('https://tjapskbsk.in/office1/images/logomark7.jpg');
 			opacity: 0.3;
 		    background-color: white;
 		    background-position: center;

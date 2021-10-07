@@ -8,6 +8,8 @@ use App\Models\Admin\wbApplicant;
 use DB;
 use Illuminate\Support\Str;
 use PDF;
+use Illuminate\Support\Facades\File;
+
 
 class verifyRegisterController extends Controller
 {
@@ -25,7 +27,7 @@ class verifyRegisterController extends Controller
         $mem_nm = request('mem_nm');
         $state_nm = request('state_id');
         // dd($state_nm);
-        $query  = wbApplicant::where('mem_stat','A')
+        $query  = wbApplicant::where('mem_stat','A')->where("state_code","WB")
             ->where(function ($query) {
                 $query->where('reg_status','!=','new')
                       ->orWhere('reg_status','')
@@ -100,12 +102,12 @@ class verifyRegisterController extends Controller
             $max_kbsk_id = DB::table('fcpm_mast_new')->orderBy('kbsk_id','desc')->value('kbsk_id');
             if($max_kbsk_id =="")
             {
-                $kbsk_id = "NEW0000000001";
+                $kbsk_id = "NEW0001";
             }
             else{
-                $me_no = substr($max_kbsk_id,3,10);
+                $me_no = substr($max_kbsk_id,3,4);
                 $last_kbsk_id = ++$me_no;
-                $last = str_pad($last_kbsk_id,10,"0",STR_PAD_LEFT);
+                $last = str_pad($last_kbsk_id,4,"0",STR_PAD_LEFT);
                 $kbsk_id = 'NEW'.$last;
             }
             // dd($kbsk_id);
@@ -271,12 +273,12 @@ class verifyRegisterController extends Controller
             $max_kbsk_id = DB::table('fcpm_mast_new')->orderBy('kbsk_id','desc')->value('kbsk_id');
             if($max_kbsk_id =="")
             {
-                $kbsk_id = "NEW0000000001";
+                $kbsk_id = "NEW0001";
             }
             else{
-                $me_no = substr($max_kbsk_id,3,10);
+                $me_no = substr($max_kbsk_id,3,4);
                 $last_kbsk_id = ++$me_no;
-                $last = str_pad($last_kbsk_id,10,"0",STR_PAD_LEFT);
+                $last = str_pad($last_kbsk_id,4,"0",STR_PAD_LEFT);
                 $kbsk_id = 'NEW'.$last;
             }
             // dd($max_kbsk_id);
@@ -395,7 +397,7 @@ class verifyRegisterController extends Controller
         $guard_nm = request('guard_nm');
         $media_nm = request('media_nm');
         // dd( $mem_posting_place);
-        $query  = DB::table('fcpm_mast_new')->where('kbsk_id','!=','')
+        $query  = DB::table('fcpm_mast_new')->where('kbsk_id','!=','')->where('state_code','WB')
             ->select('kbsk_id','mem_nm','guard_nm','mem_quali','birth_dt','media_nm','mem_desig','mem_posting_place','state_nm','state_id','state_code','gender','mem_add');
             // ->get();
         
@@ -574,10 +576,13 @@ class verifyRegisterController extends Controller
 
             if($request->file('profile_pic') != "" && $pic->profile_pic != "")
             {
-            unlink(public_path('photo_kbsk_new/'.$pic->profile_pic));
-            $upload = $request->file('profile_pic');
-            $filename =$kbsk_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
-            $upload->move(public_path('photo_kbsk_new'), $filename);
+                if(File::exists(public_path('photo_kbsk_new/'.$pic->profile_pic)) == true)
+                {
+                    unlink(public_path('photo_kbsk_new/'.$pic->profile_pic));
+                } 
+                $upload = $request->file('profile_pic');
+                $filename =$kbsk_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+                $upload->move(public_path('photo_kbsk_new'), $filename);
 
             }
             elseif($request->file('profile_pic') != "")

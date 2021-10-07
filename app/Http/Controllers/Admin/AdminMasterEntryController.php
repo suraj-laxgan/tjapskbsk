@@ -329,7 +329,7 @@ class AdminMasterEntryController extends Controller
             // dd($dis_edit);
             ->update([
                 'district_id' =>  $district_id,
-                'district_nm' => $request->district_nm,
+                'district_nm' => Str::upper($request->district_nm),
             ]);
             return redirect()->route('add.District')->with('msg','District has been updated successfully');
     }

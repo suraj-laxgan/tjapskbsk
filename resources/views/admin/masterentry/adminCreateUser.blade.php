@@ -65,7 +65,7 @@ label {
                                     {{ session('msg') }}
                                 </div>
                             @endif
-                            <div style="text-align: center;color:gray;font-size:15px;margin-top:-15px"><b><u>CREATE USER</u></b></div>
+                            <div style="text-align: center;color:gray;font-size:15px;margin-top:-15px"><b><u>CREATE ADMIN USER</u></b></div>
                             <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
                             <form method="POST" action="{{ url('ad-cuser') }}"  enctype="multipart/form-data">

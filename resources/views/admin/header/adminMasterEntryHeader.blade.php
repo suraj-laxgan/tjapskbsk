@@ -116,9 +116,9 @@
 						<a href="{{ route('add.Staff') }}" class="body_link_text {{ request()->is('ad-staff') ? 'ad_active_manu':'' }}" style="text-decoration:none;">Add Staff</a>
 						<!-- <i class="fas fa-ellipsis-v icon_size" style="position:absolute; top:0px; left:0px;"></i> -->
 					</span>
-					<span style="position:relative;width:110px">
+					<span style="position:relative;width:160px">
 						<div class="body_circle_icon fa fa-address-card"></div>
-						<a href="{{ route('add.Creuser') }}" class="body_link_text {{ request()->is('ad-cuser') ? 'ad_active_manu':'' }}" style="text-decoration:none;">Create User</a>
+						<a href="{{ route('add.Creuser') }}" class="body_link_text {{ request()->is('ad-cuser') ? 'ad_active_manu':'' }}" style="text-decoration:none;">Create Admin User</a>
 						<!-- <i class="fas fa-ellipsis-v icon_size" style="position:absolute; top:0px; left:0px;"></i> -->
 					</span>
 				</div>
