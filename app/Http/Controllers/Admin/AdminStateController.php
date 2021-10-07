@@ -195,7 +195,8 @@ class AdminStateController extends Controller
         unlink(public_path('admin_state_upload_two/'.$Banner_file->Banner_two));
         $upload2 = $request->file('Banner_two');
         // $filename =$request->state_id. '.' . $upload->getClientOriginalExtension();
-        $filename2 = $state_id. '.' . $upload2->getClientOriginalExtension();
+        $filename2 = $request->state_id. '.' . $upload2->guessExtension();
+
 
         //$filename = date('His'). '.' . $upload->getClientOriginalExtension();
         $upload2->move(public_path('admin_state_upload_two'), $filename2);
@@ -203,7 +204,7 @@ class AdminStateController extends Controller
         elseif($request->file('Banner_two') != "")
             {
             $upload2 = $request->file('Banner_two');
-            $filename2 =$request->state_id. '.' . $upload2->getClientOriginalExtension();
+            $filename2 = $request->state_id. '.' . $upload2->guessExtension();
             //$filename = date('His'). '.' . $upload->getClientOriginalExtension();
             $upload2->move(public_path('admin_state_upload_two'), $filename2);
             }
@@ -234,7 +235,7 @@ class AdminStateController extends Controller
       $editstate=State::where('state_id', $request->state_id)->first();
       //$editstate->state_id=$request->state_id;
     //   $editstate->state_nm=$request->state_nm;
-      $editstate->head_off_nm=$request->head_off_nm;
+      $editstate->head_off_nm=  Str::upper($request->head_off_nm);
       $editstate->contact_no=$request->contact_no;
       $editstate->color_nm = $request->color_nm;
       $editstate->Banner_one =$filename1;

@@ -464,8 +464,7 @@ class AdminMemberController extends Controller
     
     public function memEdit($id)
     {
-        
-
+        // dd($id);
         // $id = request('mem_id');
         $mem_dist = DB::table('district_mast')
         ->orderBy('state_id')
@@ -492,8 +491,8 @@ class AdminMemberController extends Controller
     public function adminMemUpload(Request $request)
     {
         $mem_id = $request->mem_id;
-        // dd($mem_id);
-
+        //dd($mem_id);
+// dd($request->district_nm);
     //     $validated = $request->validate([
     //         'mem_nm' => 'required',
     //         'media_nm' => 'required',
@@ -519,12 +518,15 @@ class AdminMemberController extends Controller
         $sl_nos = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
 
         $pic=wbApplicant::where('mem_id', $request->mem_id)->select('mem_id','profile_pic')->first();
+        //dd($pic);
 
             if($request->file('profile_pic') != "" && $pic->profile_pic != "")
             {
-            unlink(public_path('mem_regis_upload/'.$pic->profile_pic));
+            unlink(public_path('photo/'.$pic->profile_pic));
             $upload = $request->file('profile_pic');
-            $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+            $filename =$request->mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+            // $filename1 =$request->state_id. '.' . $upload->guessExtension();
+
             // $upload->move(public_path('mem_regis_upload'), $filename);
             $upload->move(public_path('photo'), $filename);
 
@@ -532,7 +534,7 @@ class AdminMemberController extends Controller
             elseif($request->file('profile_pic') != "")
             {
                 $upload = $request->file('profile_pic');
-                $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+                $filename =$request->mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
                 // $upload->move(public_path('mem_regis_upload'), $filename);
                 $upload->move(public_path('photo'), $filename);
 
@@ -543,13 +545,22 @@ class AdminMemberController extends Controller
                 $filename = $pic->profile_pic;
             }
 
-            $pic->profile_pic=$filename;
-            $pic->save();
+            // $pic->profile_pic=$filename;
+            // $pic->save();
 
-        $editmem=wbApplicant::where('mem_id', $request->mem_id)
-            ->select('mem_id','memo_no','new_id','state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','sl_no')
-            ->first()->update([ 
-            'mem_id' => $request->mem_id,
+        $editmem=DB::table('fcpm_mast')->where('mem_id', $mem_id)
+        // $editmem  = wbApplicant::where('mem_id', $request->mem_id)->where('mem_stat','A')
+        // ->where(function ($query) {
+        //     $query->where('reg_status','!=','new')
+        //           ->orWhere('reg_status','')
+        //           ->orWhereNull('reg_status');
+        // })
+            // ->select('memo_no','new_id','state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt',
+            // 'mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no',
+            // 'mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','sl_no')
+            // ->first()
+            ->update([ 
+            //'mem_id' => $mem_id,
             'mem_nm' =>Str::upper($request->mem_nm),
             'media_nm' => Str::upper($request->media_nm),
             'entry_dt' => $request->entry_dt,
@@ -570,10 +581,10 @@ class AdminMemberController extends Controller
             'bnk_ifsc_code' => Str::upper($request->bnk_ifsc_code),
             'des_type' => $request->des_type,
             'mem_desig' => $request->mem_desig,
-            'district' => $request->district,
+            'district' => $request->district_nm,
             'mem_posting_place' => $request->mem_posting_place,
-            'sl_no'=> $sl_nos
-            // 'profile_pic' => $request->profile_pic
+            'sl_no'=> $sl_nos,
+            'profile_pic' =>$filename
         ]);
     //    dd( $editmem);
         return redirect()->route('ad.adminexmember')->with('msg','Member has been updated  successfully');
@@ -775,14 +786,20 @@ class AdminMemberController extends Controller
         $sl_nos = DB::table('desig_mast')->where('des_type', $request->des_type)->where('des_nm', $request->mem_desig)->value('sl_no');
 
         $pic=wbApplicant::where('mem_id', $request->mem_id)->select('mem_id','profile_pic')->first();
-
+        // dd($pic->profile_pic);
             if($request->file('profile_pic') != "" && $pic->profile_pic != "")
             {
-            unlink(public_path('photo/'.$pic->profile_pic));
-            $upload = $request->file('profile_pic');
-            $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
-            $upload->move(public_path('photo'), $filename);
+                // if(\File::exists(public_path('photo/'.$pic->profile_pic)))
+                if(file_exists(public_path('photo/$pic->profile_pic')))
+                {
+                    unlink(public_path('photo/'.$pic->profile_pic));
+                }    
+                $upload = $request->file('profile_pic');
+                $filename =$mem_id.'.'. rand(1,99999). '.' . $upload->guessExtension();
+                $upload->move(public_path('photo'), $filename);
+                
             }
+           
             elseif($request->file('profile_pic') != "")
             {
                 $upload = $request->file('profile_pic');
@@ -794,14 +811,15 @@ class AdminMemberController extends Controller
             {
                 $filename = $pic->profile_pic;
             }
+        
+            
+           
 
-            $pic->profile_pic=$filename;
-            $pic->save();
+            // $pic->profile_pic=$filename;
+            // $pic->save();
 
         $editmem=wbApplicant::where('mem_id', $request->mem_id)
-            ->select('mem_id','memo_no','new_id','state_code','state_nm','mem_nm','media_nm','entry_dt','contact_no','mem_email','guard_nm','gender','mem_cast','birth_dt','mem_quali','guard_relatiion','mem_add','mem_aadhar_no','mem_pan_no','mem_voterid_no','bank_acount_no','mem_bank_nm','bnk_ifsc_code','des_type','profile_pic','mem_posting_place','mem_desig','sl_no')
-            ->first()->update([ 
-            'mem_id' => $request->mem_id,
+            ->update([ 
             'mem_nm' => Str::upper($request->mem_nm),
             'media_nm' =>Str::upper($request->media_nm),
             'entry_dt' => $request->entry_dt,
@@ -822,10 +840,10 @@ class AdminMemberController extends Controller
             'bnk_ifsc_code' =>Str::upper($request->bnk_ifsc_code),
             'des_type' => $request->des_type,
             'mem_desig' => $request->mem_desig,
-            'district' => $request->district,
+            'district' => $request->district_nm,
             'mem_posting_place' => $request->mem_posting_place,
-            'sl_no'=> $sl_nos
-            // 'profile_pic' => $request->profile_pic
+            'sl_no'=> $sl_nos,
+            'profile_pic' => $filename 
         ]);
     //    dd( $editmem);
         return redirect()->route('ad.adminMeMQue')->with('msg','Member has been updated  successfully');
